@@ -3,6 +3,7 @@ package com.example.ExchangeRates.Service;
 import com.example.ExchangeRates.Config.BotConfig;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,9 +18,9 @@ import java.util.List;
 @Component
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
-
     private final BotConfig botConfig;
-
+    @Autowired
+    private UserService userService;
     @Override
     public String getBotToken() {
         return botConfig.getToken();
@@ -30,9 +31,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return botConfig.getBotName();
     }
     public TelegramBot(BotConfig botConfig){
-
         this.botConfig=botConfig;
-       // addCommandsForMainMenu();
     }
 
 
@@ -62,7 +61,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private static ReplyKeyboardMarkup mainMenu() {
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
-
         KeyboardRow firstRow = new KeyboardRow();
         firstRow.add("📊 Аналітика курсів валют");
         firstRow.add("💱 Криптовалюти");
@@ -71,7 +69,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         KeyboardRow secondRow = new KeyboardRow();
         secondRow.add("💵 КУРСИ ВАЛЮТ");
         keyboardRows.add(secondRow);
-
         keyboard.setKeyboard(keyboardRows);
         return keyboard;
     }
@@ -89,6 +86,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         long chatID=update.getMessage().getChatId();
         switch (messageText){
             case "/start":
+                userService.registredUser(update.getMessage());
                 startCommandReceived(chatID,update.
                         getMessage().
                         getChat().
