@@ -1,7 +1,10 @@
 package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
+import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
+import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
+import com.example.ExchangeRates.Service.SchedulService.userScheduledService;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private UserService userService;
     @Autowired
     private ButtonService buttonService;
+    @Autowired
+    private PrivatBankAPI privatBankAPI;
+
+    @Autowired
+    ExchangeRatesSchedulService schedulService;
+
     @Override
     public String getBotToken() {
         return botConfig.getToken();
@@ -37,6 +46,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        schedulService.getExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);
@@ -56,7 +66,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "💵 КУРСИ ВАЛЮТ":
                 InlineKeyboardMarkup keyboardMarkup= buttonService.menuExchangeRates();
-                sendMessage(chatID,"$$$$$$$$--КУРСИ ВАЛЮТ--$$$$$$$$$",keyboardMarkup);
+                sendMessage(chatID,privatBankAPI.getExchangeRates(),keyboardMarkup);
                 break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
@@ -80,7 +90,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
         }
     }
-    private void sendMessage(long chatID,String textToSend){
+    public void sendMessage(long chatID, String textToSend){
         SendMessage message=new SendMessage();
         message.setChatId(chatID);
         message.setText(textToSend);
@@ -104,9 +114,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             log.error("Error occured: "+e.getMessage());
         }
     }
-
-
-
 
     //https://emojipedia.org/smileys
     private void startCommandReceived(long chatID, String firstName){
