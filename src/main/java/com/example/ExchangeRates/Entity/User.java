@@ -1,8 +1,6 @@
 package com.example.ExchangeRates.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -18,5 +16,7 @@ public class User{
     private String lastName;
     private String userName;
     private Timestamp registered_at;
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Notification notification;
 
 }

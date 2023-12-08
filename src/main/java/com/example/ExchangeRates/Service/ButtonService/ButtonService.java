@@ -1,15 +1,17 @@
-package com.example.ExchangeRates.Service;
+package com.example.ExchangeRates.Service.ButtonService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 @Service
 @Slf4j
-public class ExchangeRates {
+public class ButtonService {
 
     public InlineKeyboardMarkup menuExchangeRates(){
         log.info("Work Exchanges service");
@@ -25,7 +27,7 @@ public class ExchangeRates {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup notifivation() {
+    public InlineKeyboardMarkup notifiсation() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
@@ -40,5 +42,20 @@ public class ExchangeRates {
         rowsInLine.add(rowInLine);
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup mainMenu() {
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow firstRow = new KeyboardRow();
+        firstRow.add("📊 Аналітика курсів валют");
+        firstRow.add("💱 Криптовалюти");
+        firstRow.add("📰 Новини МІНФІН");
+        keyboardRows.add(firstRow);
+        KeyboardRow secondRow = new KeyboardRow();
+        secondRow.add("💵 КУРСИ ВАЛЮТ");
+        keyboardRows.add(secondRow);
+        keyboard.setKeyboard(keyboardRows);
+        return keyboard;
     }
 }

@@ -1,7 +1,9 @@
-package com.example.ExchangeRates.Service;
+package com.example.ExchangeRates.Service.UserService;
 
+import com.example.ExchangeRates.Entity.Notification;
 import com.example.ExchangeRates.Entity.User;
 import com.example.ExchangeRates.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,19 @@ public class UserService {
             user.setUserName(chat.getUserName());
             user.setFirstName(chat.getFirstName());
             user.setLastName(chat.getLastName());
+            Notification notification=new Notification(true);
+            notification.setUser(user);
+            user.setNotification(notification);
             user.setRegistered_at(new Timestamp(System.currentTimeMillis()));
             userRepository.save(user);
             log.info("User is created "+user.getUserName());
         }
+    }
+    @Transactional
+    public void turnOfNotification(Long chatID,boolean value){
+        User user=userRepository.findById(chatID).orElseThrow();
+        Notification notification=user.getNotification();
+        notification.setValue(value);
     }
 
 
