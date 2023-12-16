@@ -21,7 +21,11 @@ public class ButtonService {
         var button = new InlineKeyboardButton();
         button.setText("Щодене оповіщення");
         button.setCallbackData("Оповіщення по курсу валют");
+        var button2=new InlineKeyboardButton();
+        button2.setText("Оповіщення про зміни курсу");
+        button2.setCallbackData("Оповіщення про зміни курсу");
         rowInLine.add(button);
+        rowInLine.add(button2);
         rowsInLine.add(rowInLine);
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
@@ -57,5 +61,22 @@ public class ButtonService {
         keyboardRows.add(secondRow);
         keyboard.setKeyboard(keyboardRows);
         return keyboard;
+    }
+
+    public InlineKeyboardMarkup notifiсation2() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var buttonYES = new InlineKeyboardButton();
+        buttonYES.setText("Ввімкнути");
+        buttonYES.setCallbackData("start_notification");
+        var buutonNo = new InlineKeyboardButton();
+        buutonNo.setText("Ввимкнути");
+        buutonNo.setCallbackData("stop_notification");
+        rowInLine.add(buttonYES);
+        rowInLine.add(buutonNo);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
     }
 }

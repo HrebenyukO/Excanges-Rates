@@ -4,7 +4,6 @@ import com.example.ExchangeRates.Config.BotConfig;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
 import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
-import com.example.ExchangeRates.Service.SchedulService.userScheduledService;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +65,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "💵 КУРСИ ВАЛЮТ":
                 InlineKeyboardMarkup keyboardMarkup= buttonService.menuExchangeRates();
-                sendMessage(chatID,privatBankAPI.getExchangeRates(),keyboardMarkup);
+
+                sendMessage(chatID,privatBankAPI.getOnlineExchangeRates(),keyboardMarkup);
                 break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
@@ -87,6 +87,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             case "stop_notification":
                 sendMessage(chatID,"Оповіщення виключено");
                 userService.turnOfNotification(chatID,false);
+                break;
+            case "Оповіщення про зміни курсу":
+                InlineKeyboardMarkup keyboardMarkup2= buttonService.notifiсation2();
+                sendMessage(chatID, "Оповіщення про зміни курсу валют", keyboardMarkup2);
                 break;
         }
     }
