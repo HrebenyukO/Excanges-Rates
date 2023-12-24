@@ -14,7 +14,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataItem;
@@ -38,7 +40,7 @@ public class EuroOnlineChart  implements Chart{
     private OnlineEuroRepository onlineEuroRepository;
     private List<OnlineEuro> onlineEuroList;
 
-    private double maxValue;
+    private static double maxValue;
     @Autowired
     public EuroOnlineChart(OnlineEuroRepository onlineEuroRepository) {
         this.onlineEuroRepository = onlineEuroRepository;
@@ -49,8 +51,6 @@ public class EuroOnlineChart  implements Chart{
 
     private Map<String,Double> getActualBound(){
         Map<String, Double> map = new HashMap<>();
-
-
         // Получение минимального значения
         double minPurchaseEuro = onlineEuroList.stream()
                 .mapToDouble(OnlineEuro::getOnlinePurchaseEuro)
@@ -62,7 +62,6 @@ public class EuroOnlineChart  implements Chart{
                 .mapToDouble(OnlineEuro::getOnlineSaleEuro)
                 .max()
                 .orElse(Double.NaN);
-
         map.put("min", minPurchaseEuro);
         map.put("max", maxSaleEuro);
         maxValue=maxSaleEuro;
@@ -81,6 +80,7 @@ public class EuroOnlineChart  implements Chart{
         }
         return outputStream.toByteArray();
     }
+
     @Override
     public TimeSeriesCollection dataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
@@ -122,9 +122,6 @@ public class EuroOnlineChart  implements Chart{
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits()); // Настройка делений оси Y
         rangeAxis.setTickUnit(new NumberTickUnit(0.5));
 
-
-
-
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesPaint(0, Color.RED);
         renderer.setSeriesPaint(1, Color.GREEN);
@@ -142,8 +139,35 @@ public class EuroOnlineChart  implements Chart{
         DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
         domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM.yyyy")); // Формат даты на оси X
 
+        int annotationFontSize = 12; // Задаем желаемый размер шрифта
 
+// Добавление отметок на кривую с числовыми значениями для первого графика
+        TimeSeriesCollection datasetCollection1 = (TimeSeriesCollection) plot.getDataset();
+        TimeSeries series1 = datasetCollection1.getSeries(0);
 
+        for (int i = 0; i < series1.getItemCount(); i += 1) {
+            double x = dataset.getXValue(0, i);
+            double y = series1.getValue(i).doubleValue();
+
+            XYTextAnnotation annotation = new XYTextAnnotation(String.valueOf(y), x, y + 0.5); // Смещение аннотации вверх
+            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
+            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
+            plot.addAnnotation(annotation);
+        }
+
+// Добавление отметок на кривую с числовыми значениями для второго графика
+        TimeSeriesCollection datasetCollection2 = (TimeSeriesCollection) plot.getDataset();
+        TimeSeries series2 = datasetCollection2.getSeries(1);
+
+        for (int i = 0; i < series2.getItemCount(); i += 1) {
+            double x = dataset.getXValue(1, i); // Используем другой индекс для второго графика
+            double y = series2.getValue(i).doubleValue();
+
+            XYTextAnnotation annotation = new XYTextAnnotation(String.valueOf(y), x, y + 0.5); // Смещение аннотации вверх
+            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
+            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
+            plot.addAnnotation(annotation);
+        }
         return chart;
     }
 }
