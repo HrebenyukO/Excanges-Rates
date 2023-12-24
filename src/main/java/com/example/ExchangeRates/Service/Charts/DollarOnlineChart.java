@@ -120,7 +120,6 @@ public class DollarOnlineChart implements Chart{
         }
         return chart;
     }
-
     @Override
     public byte[] convertImageToByteArray() {
         JFreeChart chart=chart();

@@ -80,12 +80,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(chatID,privatBankAPI.getOnlineExchangeRates(),keyboardMarkup);
                 break;
             case "📊 Аналітика курсів валют":
-
-                byte [] euroOnline=euroAnalytics.convertImageToByteArray();
-                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray();
-                sendChartToTelegram(euroOnline,chatID);
-                sendChartToTelegram(dollarOnline,chatID);
-              // sendChartToTelegram(imageBytes,chatID);
+                InlineKeyboardMarkup keyboardMarkupChart= buttonService.analyseExchangeRates();
+                sendMessage(chatID,"Оберіть один з варіантів",keyboardMarkupChart);
                break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
@@ -120,6 +116,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(chatID,"Оповіщення про зміни курсу валют виключено");
                 userService.turnOfNotificationChain(chatID,false);
                 break;
+            case "PrivatChart": byte [] euroOnline=euroAnalytics.convertImageToByteArray();
+                                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray();
+                sendChartToTelegram(euroOnline,chatID);
+                sendChartToTelegram(dollarOnline,chatID);
+                break;
         }
     }
     public void sendMessage(long chatID, String textToSend){
@@ -147,31 +148,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-   /* public void sendChart(long chatID, InputFile inputFile) {
-        SendMessage message=new SendMessage();
-        message.setChatId(chatID);
-        File imageFile = new File("chart.png");
-        SendPhoto sendPhotoRequest = new SendPhoto();
-        sendPhotoRequest.setChatId(message.getChatId().toString());
-        sendPhotoRequest.setPhoto(inputFile);
-        try {
-            execute(sendPhotoRequest);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public void sendChartToTelegram(byte[] imageBytes, long chatId) {
         SendPhoto sendPhoto = new SendPhoto();
-        sendPhoto.setChatId(chatId); // Укажите ID чата, куда будет отправлено изображение
+        sendPhoto.setChatId(chatId);
         sendPhoto.setPhoto(new InputFile(new ByteArrayInputStream(imageBytes), "chart.png"));
-        sendPhoto.setCaption("График валют"); // Добавьте подпись, если необходимо
-
         try {
-            execute(sendPhoto); // Отправка изображения с помощью Telegram API
+            execute(sendPhoto);
         } catch (TelegramApiException e) {
             e.printStackTrace();
-            // Обработайте ошибку отправки, если необходимо
+
         }
     }
 
