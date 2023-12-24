@@ -8,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import java.text.SimpleDateFormat;
 
 import java.sql.Timestamp;
-import java.time.LocalTime;
 
 
 @Service
@@ -29,7 +27,7 @@ public class UserService {
             user.setUserName(chat.getUserName());
             user.setFirstName(chat.getFirstName());
             user.setLastName(chat.getLastName());
-            Notification notification=new Notification(true);
+            Notification notification=new Notification(true,true);
             notification.setUser(user);
             user.setNotification(notification);
             user.setRegistered_at(new Timestamp(System.currentTimeMillis()));
@@ -38,11 +36,16 @@ public class UserService {
         }
     }
     @Transactional
-    public void turnOfNotification(Long chatID,boolean value){
-        User user=userRepository.findById(chatID).orElseThrow();
+    public void turnOfNotification(Long ID,boolean value){
+        User user=userRepository.findById(ID).orElseThrow();
         Notification notification=user.getNotification();
-        notification.setValue(value);
+        notification.setNotification_status(value);
     }
 
-
+    @Transactional
+    public void turnOfNotificationChain(Long ID,boolean value){
+        User user=userRepository.findById(ID).orElseThrow();
+        Notification notification=user.getNotification();
+        notification.setNotification_about_chain_ER(value);
+    }
 }

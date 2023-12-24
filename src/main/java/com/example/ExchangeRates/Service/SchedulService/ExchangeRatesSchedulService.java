@@ -12,6 +12,7 @@ import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Mappers.CurrencyMappers;
 
 
+import com.example.ExchangeRates.Service.TelegramBot;
 import com.example.ExchangeRates.dto.CurrencyCashDTO;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +38,9 @@ public class ExchangeRatesSchedulService {
 
    private final String PRIVATBANK="PrivatBank";
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "* * 0 * * *")
     public void getExchangeRates(){
+        // много кода доработать
         log.info("GET API");
         String jsonOnline= privatBankAPI.getOnlineExchangeRates();
         String jsonCash= privatBankAPI.getCashExchangeRates();

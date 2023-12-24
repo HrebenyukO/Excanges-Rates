@@ -69,10 +69,10 @@ public class ButtonService {
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         var buttonYES = new InlineKeyboardButton();
         buttonYES.setText("Ввімкнути");
-        buttonYES.setCallbackData("start_notification");
+        buttonYES.setCallbackData("start_notification_chain");
         var buutonNo = new InlineKeyboardButton();
         buutonNo.setText("Ввимкнути");
-        buutonNo.setCallbackData("stop_notification");
+        buutonNo.setCallbackData("stop_notification_chain");
         rowInLine.add(buttonYES);
         rowInLine.add(buutonNo);
         rowsInLine.add(rowInLine);

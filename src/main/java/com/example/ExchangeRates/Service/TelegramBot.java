@@ -2,6 +2,7 @@ package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
+import com.example.ExchangeRates.Service.Analytics.PrivatBankAnalytics;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
 import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
 import com.example.ExchangeRates.Service.UserService.UserService;
@@ -11,10 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
 
 @Component
 @Slf4j
@@ -26,9 +32,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     private ButtonService buttonService;
     @Autowired
     private PrivatBankAPI privatBankAPI;
-
-    @Autowired
+   @Autowired
     ExchangeRatesSchedulService schedulService;
+   @Autowired
+    PrivatBankAnalytics privatBankAnalytics;
+
 
     @Override
     public String getBotToken() {
@@ -65,9 +73,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "💵 КУРСИ ВАЛЮТ":
                 InlineKeyboardMarkup keyboardMarkup= buttonService.menuExchangeRates();
-
                 sendMessage(chatID,privatBankAPI.getOnlineExchangeRates(),keyboardMarkup);
                 break;
+            case "📊 Аналітика курсів валют":
+                byte[] imageBytes=privatBankAnalytics.convertImageToByteArray();
+               sendChartToTelegram(imageBytes,chatID);
+               break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
         }
@@ -78,19 +89,28 @@ public class TelegramBot extends TelegramLongPollingBot {
         long chatID=update.getCallbackQuery().getMessage().getChatId();
         switch (data){
             case "Оповіщення по курсу валют":
-                InlineKeyboardMarkup keyboardMarkup= buttonService.notifiсation();
-                sendMessage(chatID, "Оповіщення про курс валют", keyboardMarkup);
+                InlineKeyboardMarkup keyboardMarkup1= buttonService.notifiсation();
+                sendMessage(chatID, "Оповіщення про курс валют", keyboardMarkup1);
                 break;
-            case "start_notification":  sendMessage(chatID,"Оповіщення включено");
+            case "Оповіщення про зміни курсу":
+                InlineKeyboardMarkup keyboardMarkup2=buttonService.notifiсation2();
+                sendMessage(chatID,"Оповіщення про зміни курсу валют",keyboardMarkup2);
+                break;
+            case "start_notification":
+                sendMessage(chatID,"Оповіщення включено повідомлення буде надходити о 9:00");
                 userService.turnOfNotification(chatID,true);
                 break;
             case "stop_notification":
                 sendMessage(chatID,"Оповіщення виключено");
                 userService.turnOfNotification(chatID,false);
                 break;
-            case "Оповіщення про зміни курсу":
-                InlineKeyboardMarkup keyboardMarkup2= buttonService.notifiсation2();
-                sendMessage(chatID, "Оповіщення про зміни курсу валют", keyboardMarkup2);
+            case "start_notification_chain":
+                sendMessage(chatID,"Оповіщення про зміни курсу валют включено");
+              userService.turnOfNotificationChain(chatID,true);
+                break;
+            case "stop_notification_chain":
+                sendMessage(chatID,"Оповіщення про зміни курсу валют виключено");
+                userService.turnOfNotificationChain(chatID,false);
                 break;
         }
     }
@@ -116,6 +136,34 @@ public class TelegramBot extends TelegramLongPollingBot {
             execute(message);
         } catch (TelegramApiException e) {
             log.error("Error occured: "+e.getMessage());
+        }
+    }
+
+   /* public void sendChart(long chatID, InputFile inputFile) {
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        File imageFile = new File("chart.png");
+        SendPhoto sendPhotoRequest = new SendPhoto();
+        sendPhotoRequest.setChatId(message.getChatId().toString());
+        sendPhotoRequest.setPhoto(inputFile);
+        try {
+            execute(sendPhotoRequest);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    public void sendChartToTelegram(byte[] imageBytes, long chatId) {
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(chatId); // Укажите ID чата, куда будет отправлено изображение
+        sendPhoto.setPhoto(new InputFile(new ByteArrayInputStream(imageBytes), "chart.png"));
+        sendPhoto.setCaption("График валют"); // Добавьте подпись, если необходимо
+
+        try {
+            execute(sendPhoto); // Отправка изображения с помощью Telegram API
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            // Обработайте ошибку отправки, если необходимо
         }
     }
 

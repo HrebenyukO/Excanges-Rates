@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class userScheduledService {
     @Autowired
 TelegramBot telegramBot;
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "* * 0 * * *")
     public void shedul(){
         telegramBot.sendMessage(497569697,"Shedullll");
     }
