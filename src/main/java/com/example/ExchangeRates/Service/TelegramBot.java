@@ -2,6 +2,7 @@ package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
+import com.example.ExchangeRates.Service.Charts.DollarOnlineChart;
 import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
 import com.example.ExchangeRates.Service.Charts.PrivatBankAnalytics;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
@@ -38,7 +39,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     PrivatBankAnalytics privatBankAnalytics;
    @Autowired
    EuroOnlineChart euroAnalytics;
-
+    @Autowired
+    DollarOnlineChart dollarOnlineChart;
 
     @Override
     public String getBotToken() {
@@ -78,9 +80,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(chatID,privatBankAPI.getOnlineExchangeRates(),keyboardMarkup);
                 break;
             case "📊 Аналітика курсів валют":
-                byte[] imageBytes=privatBankAnalytics.convertImageToByteArray();
-                byte [] adafa=euroAnalytics.convertImageToByteArray();
-                sendChartToTelegram(adafa,chatID);
+
+                byte [] euroOnline=euroAnalytics.convertImageToByteArray();
+                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray();
+                sendChartToTelegram(euroOnline,chatID);
+                sendChartToTelegram(dollarOnline,chatID);
               // sendChartToTelegram(imageBytes,chatID);
                break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");

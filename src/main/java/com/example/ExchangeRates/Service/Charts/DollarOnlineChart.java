@@ -1,99 +1,78 @@
 package com.example.ExchangeRates.Service.Charts;
 
-
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
-import com.example.ExchangeRates.Repository.OnlineEuroRepository;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
+import com.example.ExchangeRates.Repository.OnlineDollarRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-
-import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.Day;
-import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataItem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
-public class EuroOnlineChart  implements Chart{
-    private OnlineEuroRepository onlineEuroRepository;
-    private List<OnlineEuro> onlineEuroList;
+@Service
+public class DollarOnlineChart implements Chart{
+
+    OnlineDollarRepository onlineDollarRepository;
+    private final List<OnlineDollar> onlineDollarList;
+
+    private static double maxValue;
 
     @Autowired
-    public EuroOnlineChart(OnlineEuroRepository onlineEuroRepository) {
-        this.onlineEuroRepository = onlineEuroRepository;
-        this.onlineEuroList = onlineEuroRepository.findAll();
+    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository,
+                             List<OnlineDollar> onlineDollarList){
+        this.onlineDollarRepository=onlineDollarRepository;
+        this.onlineDollarList=onlineDollarRepository.findAll();
     }
+
+
     private Map<String,Double> getActualBound(){
         Map<String, Double> map = new HashMap<>();
         // Получение минимального значения
-        double minPurchaseEuro = onlineEuroList.stream()
-                .mapToDouble(OnlineEuro::getOnlinePurchaseEuro)
+        double minPurchaseEuro = onlineDollarList.stream()
+                .mapToDouble(OnlineDollar::getOnlinePurchaseDollar)
                 .min()
                 .orElse(Double.NaN);
 
         // Получение максимального значения
-        double maxSaleEuro = onlineEuroList.stream()
-                .mapToDouble(OnlineEuro::getOnlineSaleEuro)
+        double maxSaleEuro = onlineDollarList.stream()
+                .mapToDouble(OnlineDollar::getOnlineSaleDollar)
                 .max()
                 .orElse(Double.NaN);
         map.put("min", minPurchaseEuro);
         map.put("max", maxSaleEuro);
+        maxValue=maxSaleEuro;
         return map;
     }
-    @Override
-    public byte[] convertImageToByteArray() {
-        JFreeChart chart=chart();
-        BufferedImage image = chart.createBufferedImage(width, height);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(image, "png", outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return outputStream.toByteArray();
-    }
-
     @Override
     public TimeSeriesCollection dataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
         // Добавляем данные во временные ряды, используя addOrUpdate()
-        for (OnlineEuro onlineEuro : onlineEuroList) {
-            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
-            onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleEuro());
+        for (OnlineDollar onlineEuro : onlineDollarList) {
+            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseDollar());
+            onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleDollar());
         }
         dataset.addSeries(onlinePurchaseSeries);
         dataset.addSeries(onlineSaleSeries);
         return dataset;
     }
-
     @Override
     public JFreeChart chart() {
         var dataset = dataset();
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "ОНЛАЙН ЄВРО ПриватБанк",
+                "ОНЛАЙН ДОЛЛАР ПриватБанк",
                 "Дата",
                 "Курс",
                 dataset,
@@ -140,5 +119,18 @@ public class EuroOnlineChart  implements Chart{
             plot.addAnnotation(annotation);
         }
         return chart;
+    }
+
+    @Override
+    public byte[] convertImageToByteArray() {
+        JFreeChart chart=chart();
+        BufferedImage image = chart.createBufferedImage(width, height);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputStream.toByteArray();
     }
 }
