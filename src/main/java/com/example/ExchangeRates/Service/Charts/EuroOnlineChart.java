@@ -1,34 +1,33 @@
 package com.example.ExchangeRates.Service.Charts;
 
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
+
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
 import com.example.ExchangeRates.Repository.OnlineEuroRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.annotations.XYPointerAnnotation;
+import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.Dataset;
+
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.BasicStroke;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,21 +35,25 @@ import java.util.Map;
 @Component
 public class EuroOnlineChart  implements Chart{
 
-    @Autowired
     private OnlineEuroRepository onlineEuroRepository;
+    private List<OnlineEuro> onlineEuroList;
 
-    private List<OnlineEuro> getAllOnlineEuro(){
-
-        return onlineEuroRepository.findAll();
+    private double maxValue;
+    @Autowired
+    public EuroOnlineChart(OnlineEuroRepository onlineEuroRepository) {
+        this.onlineEuroRepository = onlineEuroRepository;
+        this.onlineEuroList = onlineEuroRepository.findAll();
     }
+
+
 
     private Map<String,Double> getActualBound(){
         Map<String, Double> map = new HashMap<>();
-        List<OnlineEuro> onlineEuroList=getAllOnlineEuro();
+
 
         // Получение минимального значения
-        double minSaleEuro = onlineEuroList.stream()
-                .mapToDouble(OnlineEuro::getOnlineSaleEuro)
+        double minPurchaseEuro = onlineEuroList.stream()
+                .mapToDouble(OnlineEuro::getOnlinePurchaseEuro)
                 .min()
                 .orElse(Double.NaN);
 
@@ -60,8 +63,9 @@ public class EuroOnlineChart  implements Chart{
                 .max()
                 .orElse(Double.NaN);
 
-        map.put("min", minSaleEuro);
+        map.put("min", minPurchaseEuro);
         map.put("max", maxSaleEuro);
+        maxValue=maxSaleEuro;
         return map;
     }
 
@@ -78,48 +82,47 @@ public class EuroOnlineChart  implements Chart{
         return outputStream.toByteArray();
     }
     @Override
-    public TimeSeriesCollection  dataset() {
+    public TimeSeriesCollection dataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
+        TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
+        TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
 
-        var onlineEuros = onlineEuroRepository.findAll();
-
-        // Создаем временные ряды для курса валюты при покупке и продаже онлайн
-        TimeSeries onlinePurchaseSeries = new TimeSeries("Online Purchase Euro");
-        TimeSeries onlineSaleSeries = new TimeSeries("Online Sale Euro");
-
-        // Добавляем данные во временные ряды
-        for (OnlineEuro onlineEuro : onlineEuros) {
-            onlinePurchaseSeries.add(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
-            onlineSaleSeries.add(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleEuro());
+        // Добавляем данные во временные ряды, используя addOrUpdate()
+        for (OnlineEuro onlineEuro : onlineEuroList) {
+            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
+            onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleEuro());
         }
 
-        // Добавляем временные ряды в коллекцию
         dataset.addSeries(onlinePurchaseSeries);
         dataset.addSeries(onlineSaleSeries);
-
         return dataset;
     }
 
     @Override
-    public JFreeChart chart(){
+    public JFreeChart chart() {
         var dataset = dataset();
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Євро онлайн ПриватБанк",
-                "Date",
-                "Курс Євро онлайн",
+        JFreeChart chart = ChartFactory.createTimeSeriesChart(
+                "ОНЛАЙН ЄВРО ПриватБанк",
+                "Дата",
+                "Курс",
                 dataset,
-                PlotOrientation.VERTICAL,
-                true, true, false);
+                true,
+                true,
+                false
+        );
 
         XYPlot plot = chart.getXYPlot();
 
-        double minBound=getActualBound().get("min")-1;
-        double maxBound=getActualBound().get("max")+1;
+        double minBound = getActualBound().get("min") - 1;
+        double maxBound = getActualBound().get("max") + 1;
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setLowerBound(minBound); // Начальное значение оси Y
         rangeAxis.setUpperBound(maxBound); // Верхняя граница оси Y
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits()); // Настройка делений оси Y
+        rangeAxis.setTickUnit(new NumberTickUnit(0.5));
+
+
 
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
@@ -134,6 +137,13 @@ public class EuroOnlineChart  implements Chart{
         plot.setRangeGridlinePaint(Color.WHITE); // Цвет вертикальных линий
         plot.setDomainGridlinesVisible(true); // Отображаем вертикальные линии
         plot.setRangeGridlinesVisible(true);
+
+
+        DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
+        domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM.yyyy")); // Формат даты на оси X
+
+
+
         return chart;
     }
 }

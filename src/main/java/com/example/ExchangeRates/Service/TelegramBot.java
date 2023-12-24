@@ -81,7 +81,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 byte[] imageBytes=privatBankAnalytics.convertImageToByteArray();
                 byte [] adafa=euroAnalytics.convertImageToByteArray();
                 sendChartToTelegram(adafa,chatID);
-               sendChartToTelegram(imageBytes,chatID);
+              // sendChartToTelegram(imageBytes,chatID);
                break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
