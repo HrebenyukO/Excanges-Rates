@@ -1,4 +1,4 @@
-package com.example.ExchangeRates.Service.Analytics;
+package com.example.ExchangeRates.Service.Charts;
 
 import com.example.ExchangeRates.Entity.Currency.CashDollar;
 import com.example.ExchangeRates.Entity.Currency.CashEuro;
@@ -9,26 +9,21 @@ import com.example.ExchangeRates.Repository.CashEuroRepository;
 import com.example.ExchangeRates.Repository.OnlineDollarRepository;
 import com.example.ExchangeRates.Repository.OnlineEuroRepository;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -39,7 +34,7 @@ public class PrivatBankAnalytics {
 
     private OnlineDollarRepository onlineDollarRepository;
 
-    private OnlineEuroRepository onlineEuroRepository;
+
 
     PrivatBankAnalytics(CashEuroRepository cashEuroRepository,
                         CashDollarRepository cashDollarRepository,
@@ -48,7 +43,7 @@ public class PrivatBankAnalytics {
         this.cashEuroRepository=cashEuroRepository;
         this.cashDollarRepository=cashDollarRepository;
         this.onlineDollarRepository=onlineDollarRepository;
-        this.onlineEuroRepository=onlineEuroRepository;
+
     }
 
     private List<CashDollar> cashDollarList;
@@ -66,9 +61,7 @@ public class PrivatBankAnalytics {
         return onlineDollarRepository.findAll();
     }
 
-    private List<OnlineEuro> getAllOnlineEuro(){
-        return onlineEuroRepository.findAll();
-    }
+
    /* public InputFile sendChart() {
         DefaultCategoryDataset dataset = getDefaultCategoryDataset();
         JFreeChart lineChart=createJFreeChart(dataset);
@@ -115,7 +108,6 @@ public class PrivatBankAnalytics {
         plot.setRangeGridlinePaint(Color.WHITE); // Цвет вертикальных линий
         plot.setDomainGridlinesVisible(true); // Отображаем вертикальные линии
         plot.setRangeGridlinesVisible(true);
-
 
         // Настройка осей
         CategoryAxis domainAxis = plot.getDomainAxis();

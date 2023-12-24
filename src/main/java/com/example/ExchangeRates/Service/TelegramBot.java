@@ -2,7 +2,8 @@ package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
-import com.example.ExchangeRates.Service.Analytics.PrivatBankAnalytics;
+import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
+import com.example.ExchangeRates.Service.Charts.PrivatBankAnalytics;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
 import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
 import com.example.ExchangeRates.Service.UserService.UserService;
@@ -20,7 +21,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
 @Component
 @Slf4j
@@ -36,6 +36,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     ExchangeRatesSchedulService schedulService;
    @Autowired
     PrivatBankAnalytics privatBankAnalytics;
+   @Autowired
+   EuroOnlineChart euroAnalytics;
 
 
     @Override
@@ -53,7 +55,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        schedulService.getExchangeRates();
+        //schedulService.getExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);
@@ -77,6 +79,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "📊 Аналітика курсів валют":
                 byte[] imageBytes=privatBankAnalytics.convertImageToByteArray();
+                byte [] adafa=euroAnalytics.convertImageToByteArray();
+                sendChartToTelegram(adafa,chatID);
                sendChartToTelegram(imageBytes,chatID);
                break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
