@@ -24,7 +24,7 @@ import java.util.Map;
 public class DollarOnlineChart implements Chart{
 
     OnlineDollarRepository onlineDollarRepository;
-    private final List<OnlineDollar> onlineDollarList;
+    private List<OnlineDollar> onlineDollarList;
 
     private static double maxValue;
 

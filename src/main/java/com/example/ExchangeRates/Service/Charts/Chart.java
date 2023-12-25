@@ -2,9 +2,7 @@ package com.example.ExchangeRates.Service.Charts;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -44,6 +42,8 @@ public interface Chart {
         plot.setRangeGridlinesVisible(true);
 
         DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
-        domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM.yyyy"));
+        domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM"));
+        domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1)); // Установка делений на один день
+
     }
 }

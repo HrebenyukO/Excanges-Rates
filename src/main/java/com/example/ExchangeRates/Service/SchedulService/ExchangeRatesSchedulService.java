@@ -38,7 +38,7 @@ public class ExchangeRatesSchedulService {
 
    private final String PRIVATBANK="PrivatBank";
 
-    @Scheduled(cron = "* * 0 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void getExchangeRates(){
         // много кода доработать
         log.info("GET API");
