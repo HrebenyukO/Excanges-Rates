@@ -16,9 +16,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DollarOnlineChart implements Chart{
@@ -26,15 +31,11 @@ public class DollarOnlineChart implements Chart{
     OnlineDollarRepository onlineDollarRepository;
     private List<OnlineDollar> onlineDollarList;
 
-    private static double maxValue;
-
     @Autowired
-    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository,
-                             List<OnlineDollar> onlineDollarList){
+    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository){
         this.onlineDollarRepository=onlineDollarRepository;
         this.onlineDollarList=onlineDollarRepository.findAll();
     }
-
 
     private Map<String,Double> getActualBound(){
         Map<String, Double> map = new HashMap<>();
@@ -51,26 +52,54 @@ public class DollarOnlineChart implements Chart{
                 .orElse(Double.NaN);
         map.put("min", minPurchaseEuro);
         map.put("max", maxSaleEuro);
-        maxValue=maxSaleEuro;
         return map;
     }
-    @Override
-    public TimeSeriesCollection dataset() {
+    public TimeSeriesCollection dataset(String period) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
-        // Добавляем данные во временные ряды, используя addOrUpdate()
-        for (OnlineDollar onlineEuro : onlineDollarList) {
+
+        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList, period);
+
+        for (OnlineDollar onlineEuro : filteredList) {
             onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseDollar());
             onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleDollar());
         }
         dataset.addSeries(onlinePurchaseSeries);
         dataset.addSeries(onlineSaleSeries);
+
         return dataset;
     }
+
+    // Метод для фильтрации данных по выбранному периоду времени
+    private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, String period) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate;
+
+        if (period.equals("10_days")) {
+            startDate = currentDate.minusDays(10);
+        } else if (period.equals("month")) {
+            startDate = currentDate.minusMonths(1);
+        } else if (period.equals("quarter")) {
+            startDate = currentDate.minusMonths(3);
+        } else {
+            startDate = currentDate;
+        }
+
+        return data.stream()
+                .filter(entry -> convertToLocalDate(entry.getDate()).isAfter(startDate))
+                .collect(Collectors.toList());
+    }
+
+    // Метод для преобразования java.util.Date в LocalDate
+    private LocalDate convertToLocalDate(Date dateToConvert) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
     @Override
-    public JFreeChart chart() {
-        var dataset = dataset();
+    public JFreeChart chart(String period) {
+        var dataset = dataset(period);
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "ОНЛАЙН ДОЛЛАР ПриватБанк",
                 "Дата",
@@ -121,8 +150,8 @@ public class DollarOnlineChart implements Chart{
         return chart;
     }
     @Override
-    public byte[] convertImageToByteArray() {
-        JFreeChart chart=chart();
+    public byte[] convertImageToByteArray(String period) {
+        JFreeChart chart=chart(period);
         BufferedImage image = chart.createBufferedImage(width, height);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {

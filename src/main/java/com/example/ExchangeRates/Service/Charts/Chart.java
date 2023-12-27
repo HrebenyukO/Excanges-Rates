@@ -12,14 +12,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public interface Chart {
     int width = 800; // Ширина изображения
     int height = 400; // Высота изображения
     int annotationFontSize = 13; // Задаем желаемый размер шрифта
-    TimeSeriesCollection dataset();
-    JFreeChart chart();
-     byte[] convertImageToByteArray();
+    TimeSeriesCollection dataset(String period);
+    JFreeChart chart(String period);
+     byte[] convertImageToByteArray(String period);
 
     default void configurePlot(XYPlot plot, double minBound, double maxBound) {
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
@@ -44,6 +46,7 @@ public interface Chart {
         DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
         domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM"));
         domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1)); // Установка делений на один день
+
 
     }
 }

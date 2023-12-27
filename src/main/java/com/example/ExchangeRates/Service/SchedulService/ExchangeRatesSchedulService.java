@@ -10,9 +10,6 @@ import com.example.ExchangeRates.Repository.OnlineDollarRepository;
 import com.example.ExchangeRates.Repository.OnlineEuroRepository;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Mappers.CurrencyMappers;
-
-
-import com.example.ExchangeRates.Service.TelegramBot;
 import com.example.ExchangeRates.dto.CurrencyCashDTO;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +41,8 @@ public class ExchangeRatesSchedulService {
         log.info("GET API");
         String jsonOnline= privatBankAPI.getOnlineExchangeRates();
         String jsonCash= privatBankAPI.getCashExchangeRates();
-
         CurrencyOnlineDTO onlineDTO=currencyMapper.JsonToCurrencyDTO(jsonOnline);
         CurrencyCashDTO cashDTO=currencyMapper.JsonToCurrencyCashDTO(jsonCash);
-
         OnlineDollar onlineDollar=currencyMapper.dtoToOnlineDollar(onlineDTO,PRIVATBANK);
         onlineDollarRepository.save(onlineDollar);
         OnlineEuro onlineEuro=currencyMapper.dtoToOnlineEuro(onlineDTO,PRIVATBANK);

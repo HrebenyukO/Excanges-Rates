@@ -57,7 +57,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        //schedulService.getExchangeRates();
+         //schedulService.getExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);
@@ -116,12 +116,22 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(chatID,"Оповіщення про зміни курсу валют виключено");
                 userService.turnOfNotificationChain(chatID,false);
                 break;
-            case "PrivatChart": byte [] euroOnline=euroAnalytics.convertImageToByteArray();
-                                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray();
+            case "PrivatChart":
+                InlineKeyboardMarkup keyboardMarkup3=buttonService.privatbankAnalyse();
+                sendMessage(chatID,"Курс валют ПриватБанку",keyboardMarkup3);
+                byte [] euroOnline=euroAnalytics.convertImageToByteArray("10_days");
+                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray("10_days");
+                sendChartToTelegram(euroOnline,chatID);
+                sendChartToTelegram(dollarOnline,chatID);
+                break;
+            case "Analyse_month":
+                euroOnline=euroAnalytics.convertImageToByteArray("month");
+                dollarOnline=dollarOnlineChart.convertImageToByteArray("month");
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
         }
+
     }
     public void sendMessage(long chatID, String textToSend){
         SendMessage message=new SendMessage();
