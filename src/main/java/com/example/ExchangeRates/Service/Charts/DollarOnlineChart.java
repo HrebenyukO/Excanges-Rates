@@ -61,6 +61,7 @@ public class DollarOnlineChart implements Chart{
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
 
+
         List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList, currentPeriod);
 
         for (OnlineDollar onlineEuro : filteredList) {

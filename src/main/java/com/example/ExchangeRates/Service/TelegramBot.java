@@ -1,6 +1,7 @@
 package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
+import com.example.ExchangeRates.Service.API.NacBankAPI;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Service.Charts.DollarOnlineChart;
 import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
@@ -42,7 +43,8 @@ public class TelegramBot extends TelegramLongPollingBot {
    EuroOnlineChart euroAnalytics;
     @Autowired
     DollarOnlineChart dollarOnlineChart;
-
+    @Autowired
+    NacBankAPI nacBankAPI;
     @Override
     public String getBotToken() {
         return botConfig.getToken();
@@ -58,7 +60,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-         //schedulService.getExchangeRates();
+         schedulService.saveActualExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);
@@ -132,6 +134,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
+
 
         }
 

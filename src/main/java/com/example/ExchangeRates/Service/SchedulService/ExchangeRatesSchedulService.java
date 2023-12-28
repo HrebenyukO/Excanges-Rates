@@ -1,13 +1,9 @@
 package com.example.ExchangeRates.Service.SchedulService;
 
-import com.example.ExchangeRates.Entity.Currency.CashDollar;
-import com.example.ExchangeRates.Entity.Currency.CashEuro;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
-import com.example.ExchangeRates.Repository.CashDollarRepository;
-import com.example.ExchangeRates.Repository.CashEuroRepository;
-import com.example.ExchangeRates.Repository.OnlineDollarRepository;
-import com.example.ExchangeRates.Repository.OnlineEuroRepository;
+import com.example.ExchangeRates.Entity.Currency.*;
+import com.example.ExchangeRates.Mappers.NacBankMapper;
+import com.example.ExchangeRates.Repository.*;
+import com.example.ExchangeRates.Service.API.NacBankAPI;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Mappers.CurrencyMappers;
 import com.example.ExchangeRates.dto.CurrencyCashDTO;
@@ -22,31 +18,44 @@ import org.springframework.stereotype.Service;
 public class ExchangeRatesSchedulService {
     @Autowired
     PrivatBankAPI privatBankAPI;
-   @Autowired
+    @Autowired
+    NacBankAPI nacBankAPI;
+    @Autowired
    CurrencyMappers currencyMapper;
-  @Autowired
+    @Autowired
     OnlineDollarRepository onlineDollarRepository;
-  @Autowired
+    @Autowired
     OnlineEuroRepository onlineEuroRepository;
-  @Autowired
+    @Autowired
     CashDollarRepository cashDollarRepository;
-  @Autowired
+    @Autowired
     CashEuroRepository cashEuroRepository;
 
+    @Autowired
+    NacBankRepository nacBankRepository;
+    @Autowired
+    NacBankMapper nacBankMapper;
    private final String PRIVATBANK="PrivatBank";
 
     @Scheduled(cron = "0 0 * * * *")
-    public void getExchangeRates(){
+    public void saveActualExchangeRates(){
         // много кода доработать
-        log.info("GET API");
-        String jsonOnline= privatBankAPI.getOnlineExchangeRates();
-        String jsonCash= privatBankAPI.getCashExchangeRates();
-        CurrencyOnlineDTO onlineDTO=currencyMapper.JsonToCurrencyDTO(jsonOnline);
-        CurrencyCashDTO cashDTO=currencyMapper.JsonToCurrencyCashDTO(jsonCash);
+        log.info("GET && SAVE API");
+        String jsonOnlinePB= privatBankAPI.getOnlineExchangeRates();
+        String jsonCashPB= privatBankAPI.getCashExchangeRates();
+
+        var dto=nacBankAPI.getExchangeRates();
+        NacBank nacBank=nacBankMapper.apply(dto);
+        nacBankRepository.save(nacBank);
+
+        CurrencyOnlineDTO onlineDTO=currencyMapper.JsonToCurrencyDtoPB(jsonOnlinePB);
+        CurrencyCashDTO cashDTO=currencyMapper.JsonToCurrencyCashDtoPB(jsonCashPB);
+
         OnlineDollar onlineDollar=currencyMapper.dtoToOnlineDollar(onlineDTO,PRIVATBANK);
         onlineDollarRepository.save(onlineDollar);
         OnlineEuro onlineEuro=currencyMapper.dtoToOnlineEuro(onlineDTO,PRIVATBANK);
         onlineEuroRepository.save(onlineEuro);
+
         CashDollar cashDollar=currencyMapper.dtoToCashDollar(cashDTO,PRIVATBANK);
         cashDollarRepository.save(cashDollar);
         CashEuro cashEuro=currencyMapper.dtoToCashEuro(cashDTO,PRIVATBANK);

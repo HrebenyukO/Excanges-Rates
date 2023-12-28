@@ -1,9 +1,6 @@
 package com.example.ExchangeRates.Mappers;
 
-import com.example.ExchangeRates.Entity.Currency.CashDollar;
-import com.example.ExchangeRates.Entity.Currency.CashEuro;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
+import com.example.ExchangeRates.Entity.Currency.*;
 import com.example.ExchangeRates.dto.CurrencyCashDTO;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 
@@ -15,9 +12,8 @@ import java.sql.Date;
 
 @Component
 public class CurrencyMappers {
-    public CurrencyOnlineDTO JsonToCurrencyDTO(String json) {
+    public CurrencyOnlineDTO JsonToCurrencyDtoPB(String json) {
         JSONArray jsonArray = new JSONArray(json);
-
         JSONObject euroObject = jsonArray.getJSONObject(0);
         JSONObject dollarObject = jsonArray.getJSONObject(1);
         return new CurrencyOnlineDTO(
@@ -27,7 +23,7 @@ public class CurrencyMappers {
                 Double.parseDouble(euroObject.getString("sale"))
         );
     }
-    public CurrencyCashDTO JsonToCurrencyCashDTO(String json) {
+    public CurrencyCashDTO JsonToCurrencyCashDtoPB(String json) {
         JSONArray jsonArray = new JSONArray(json);
 
         JSONObject euroObject = jsonArray.getJSONObject(0);
@@ -39,6 +35,8 @@ public class CurrencyMappers {
                 Double.parseDouble(euroObject.getString("sale"))
         );
     }
+
+
 
     public CashDollar dtoToCashDollar(CurrencyCashDTO dto, String bank ){
     CashDollar entity=new CashDollar();
@@ -72,4 +70,5 @@ public class CurrencyMappers {
         entity.setDate(new Date(System.currentTimeMillis()));
         return entity;
     }
+
 }
