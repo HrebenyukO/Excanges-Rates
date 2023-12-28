@@ -4,6 +4,7 @@ import com.example.ExchangeRates.Config.BotConfig;
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Service.Charts.DollarOnlineChart;
 import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
+import com.example.ExchangeRates.Service.Charts.Period;
 import com.example.ExchangeRates.Service.Charts.PrivatBankAnalytics;
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
 import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
@@ -118,18 +119,20 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "PrivatChart":
                 InlineKeyboardMarkup keyboardMarkup3=buttonService.privatbankAnalyse();
-                sendMessage(chatID,"Курс валют ПриватБанку",keyboardMarkup3);
-                byte [] euroOnline=euroAnalytics.convertImageToByteArray("10_days");
-                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray("10_days");
+                sendMessage(chatID,"Курс валют останні 10 днів ",keyboardMarkup3);
+                byte [] euroOnline=euroAnalytics.convertImageToByteArray(Period.TEN_DAYS);
+                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray(Period.TEN_DAYS);
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
             case "Analyse_month":
-                euroOnline=euroAnalytics.convertImageToByteArray("month");
-                dollarOnline=dollarOnlineChart.convertImageToByteArray("month");
+                sendMessage(chatID,"Курс валют останній місяць ");
+                euroOnline=euroAnalytics.convertImageToByteArray(Period.MONTH);
+                dollarOnline=dollarOnlineChart.convertImageToByteArray(Period.MONTH);
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
+
         }
 
     }

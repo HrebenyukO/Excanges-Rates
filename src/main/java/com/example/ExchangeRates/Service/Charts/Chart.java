@@ -19,9 +19,9 @@ public interface Chart {
     int width = 800; // Ширина изображения
     int height = 400; // Высота изображения
     int annotationFontSize = 13; // Задаем желаемый размер шрифта
-    TimeSeriesCollection dataset(String period);
-    JFreeChart chart(String period);
-     byte[] convertImageToByteArray(String period);
+    TimeSeriesCollection dataset();
+    JFreeChart chart();
+     byte[] convertImageToByteArray(Period period);
 
     default void configurePlot(XYPlot plot, double minBound, double maxBound) {
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();

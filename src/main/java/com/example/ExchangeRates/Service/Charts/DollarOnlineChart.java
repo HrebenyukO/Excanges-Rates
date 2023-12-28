@@ -30,6 +30,8 @@ public class DollarOnlineChart implements Chart{
 
     OnlineDollarRepository onlineDollarRepository;
     private List<OnlineDollar> onlineDollarList;
+    private Period currentPeriod;
+
 
     @Autowired
     public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository){
@@ -54,12 +56,12 @@ public class DollarOnlineChart implements Chart{
         map.put("max", maxSaleEuro);
         return map;
     }
-    public TimeSeriesCollection dataset(String period) {
+    public TimeSeriesCollection dataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
 
-        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList, period);
+        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList, currentPeriod);
 
         for (OnlineDollar onlineEuro : filteredList) {
             onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseDollar());
@@ -72,15 +74,15 @@ public class DollarOnlineChart implements Chart{
     }
 
     // Метод для фильтрации данных по выбранному периоду времени
-    private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, String period) {
+    private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
 
-        if (period.equals("10_days")) {
+        if (period.equals(Period.TEN_DAYS)) {
             startDate = currentDate.minusDays(10);
-        } else if (period.equals("month")) {
+        } else if (period.equals(Period.MONTH)) {
             startDate = currentDate.minusMonths(1);
-        } else if (period.equals("quarter")) {
+        } else if (period.equals(Period.QUARTER)) {
             startDate = currentDate.minusMonths(3);
         } else {
             startDate = currentDate;
@@ -98,8 +100,8 @@ public class DollarOnlineChart implements Chart{
                 .toLocalDate();
     }
     @Override
-    public JFreeChart chart(String period) {
-        var dataset = dataset(period);
+    public JFreeChart chart() {
+        var dataset = dataset();
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "ОНЛАЙН ДОЛЛАР ПриватБанк",
                 "Дата",
@@ -150,8 +152,9 @@ public class DollarOnlineChart implements Chart{
         return chart;
     }
     @Override
-    public byte[] convertImageToByteArray(String period) {
-        JFreeChart chart=chart(period);
+    public byte[] convertImageToByteArray(Period period) {
+        this.currentPeriod=period;
+        JFreeChart chart=chart();
         BufferedImage image = chart.createBufferedImage(width, height);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {

@@ -1,26 +1,16 @@
 package com.example.ExchangeRates.Service.Charts;
 
 
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
 import com.example.ExchangeRates.Repository.OnlineEuroRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
-import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.Day;
-import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
@@ -29,8 +19,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -44,6 +32,8 @@ import java.util.stream.Collectors;
 public class EuroOnlineChart  implements Chart{
     private OnlineEuroRepository onlineEuroRepository;
     private List<OnlineEuro> onlineEuroList;
+
+    private Period currentPeriod;
 
     @Autowired
     public EuroOnlineChart(OnlineEuroRepository onlineEuroRepository) {
@@ -67,8 +57,9 @@ public class EuroOnlineChart  implements Chart{
         return map;
     }
     @Override
-    public byte[] convertImageToByteArray(String period) {
-        JFreeChart chart=chart(period);
+    public byte[] convertImageToByteArray(Period period) {
+        this.currentPeriod=period;
+        JFreeChart chart=chart();
         BufferedImage image = chart.createBufferedImage(width, height);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -80,13 +71,13 @@ public class EuroOnlineChart  implements Chart{
     }
 
     @Override
-    public TimeSeriesCollection dataset(String period) {
+    public TimeSeriesCollection dataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
 
 
-        List<OnlineEuro> filteredList = filterByPeriod(onlineEuroList,period);
+        List<OnlineEuro> filteredList = filterByPeriod(onlineEuroList,currentPeriod);
         // Добавляем данные во временные ряды, используя addOrUpdate()
         for (OnlineEuro onlineEuro : filteredList) {
             onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
@@ -96,15 +87,15 @@ public class EuroOnlineChart  implements Chart{
         dataset.addSeries(onlineSaleSeries);
         return dataset;
     }
-    private List<OnlineEuro> filterByPeriod(List<OnlineEuro> data, String period) {
+    private List<OnlineEuro> filterByPeriod(List<OnlineEuro> data, Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
 
-        if (period.equals("10_days")) {
+        if (period.equals(Period.TEN_DAYS)) {
             startDate = currentDate.minusDays(10);
-        } else if (period.equals("month")) {
+        } else if (period.equals(Period.MONTH)) {
             startDate = currentDate.minusMonths(1);
-        } else if (period.equals("quarter")) {
+        } else if (period.equals(Period.QUARTER)) {
             startDate = currentDate.minusMonths(3);
         } else {
             startDate = currentDate;
@@ -123,8 +114,8 @@ public class EuroOnlineChart  implements Chart{
     }
 
     @Override
-    public JFreeChart chart(String period) {
-        var dataset = dataset(period);
+    public JFreeChart chart() {
+        var dataset = dataset();
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "ОНЛАЙН ЄВРО ПриватБанк",
                 "Дата",
