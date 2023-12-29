@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface NacBankRepository extends JpaRepository<NacBank,Long> {
 
-   @Query(value = "INSERT INTO nac_bank_table (dollar, euro, date) VALUES (:id, :dollar, :euro, :date)", nativeQuery = true)
+   @Query(value = "INSERT INTO nac_bank (dollar, euro, date) VALUES (:id, :dollar, :euro, :date)", nativeQuery = true)
     NacBank save(@Param("dollar") Double dollar, @Param("euro") Double euro, @Param("date") Date date);
 
-    @Query(value = "SELECT * FROM nac_bank_table", nativeQuery = true)
+    @Query(value = "SELECT * FROM nac_bank", nativeQuery = true)
     List<NacBank> findAll();
 
 }

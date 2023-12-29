@@ -1,6 +1,8 @@
 package com.example.ExchangeRates.Service.Charts;
 
+import com.example.ExchangeRates.Entity.Currency.NacBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
+import com.example.ExchangeRates.Repository.NacBankRepository;
 import com.example.ExchangeRates.Repository.OnlineDollarRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -23,20 +25,26 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class DollarOnlineChart implements Chart{
 
-    OnlineDollarRepository onlineDollarRepository;
+    private OnlineDollarRepository onlineDollarRepository;
     private List<OnlineDollar> onlineDollarList;
+
+    private NacBankRepository nacBankRepository;
+    private List <NacBank> nacBankList;
     private Period currentPeriod;
 
 
     @Autowired
-    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository){
+    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository,NacBankRepository nacBankRepository){
         this.onlineDollarRepository=onlineDollarRepository;
+        this.nacBankRepository=nacBankRepository;
         this.onlineDollarList=onlineDollarRepository.findAll();
+        this.nacBankList=nacBankRepository.findAll();
     }
 
     private Map<String,Double> getActualBound(){
@@ -60,22 +68,31 @@ public class DollarOnlineChart implements Chart{
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
+        TimeSeries nacBankDollar=new TimeSeries("НацБанк");
+        List<NacBank> filteredLists=filterByPeriod(
+                nacBankList,
+                nacBank -> convertToLocalDate(nacBank.getDate()),
+                currentPeriod);
+        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList,
+                onlineDollar -> convertToLocalDate(onlineDollar.getDate())  ,
+                currentPeriod);
 
 
-        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList, currentPeriod);
-
-        for (OnlineDollar onlineEuro : filteredList) {
-            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseDollar());
-            onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleDollar());
+        for (OnlineDollar onlineDollar : filteredList) {
+            onlinePurchaseSeries.addOrUpdate(new Day(onlineDollar.getDate()), onlineDollar.getOnlinePurchaseDollar());
+            onlineSaleSeries.addOrUpdate(new Day(onlineDollar.getDate()), onlineDollar.getOnlineSaleDollar());
+        }
+        for(NacBank nacBank:filteredLists){
+            nacBankDollar.addOrUpdate(new Day(nacBank.getDate()),nacBank.getDollar());
         }
         dataset.addSeries(onlinePurchaseSeries);
         dataset.addSeries(onlineSaleSeries);
-
+        dataset.addSeries(nacBankDollar);
         return dataset;
     }
 
     // Метод для фильтрации данных по выбранному периоду времени
-    private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, Period period) {
+  /*  private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
 
@@ -92,6 +109,29 @@ public class DollarOnlineChart implements Chart{
         return data.stream()
                 .filter(entry -> convertToLocalDate(entry.getDate()).isAfter(startDate))
                 .collect(Collectors.toList());
+    }*/
+
+    private <T> List<T> filterByPeriod(
+            List<T> data,
+            Function<T, LocalDate> getDateFunction,
+            Period period
+    ) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate;
+
+        if (period.equals(Period.TEN_DAYS)) {
+            startDate = currentDate.minusDays(10);
+        } else if (period.equals(Period.MONTH)) {
+            startDate = currentDate.minusMonths(1);
+        } else if (period.equals(Period.QUARTER)) {
+            startDate = currentDate.minusMonths(3);
+        } else {
+            startDate = currentDate;
+        }
+
+        return data.stream()
+                .filter(entry -> getDateFunction.apply(entry).isAfter(startDate))
+                .collect(Collectors.toList());
     }
 
     // Метод для преобразования java.util.Date в LocalDate
@@ -100,6 +140,7 @@ public class DollarOnlineChart implements Chart{
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
     }
+
     @Override
     public JFreeChart chart() {
         var dataset = dataset();
