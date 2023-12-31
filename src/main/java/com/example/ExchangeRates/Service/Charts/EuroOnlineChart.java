@@ -59,7 +59,7 @@ public class EuroOnlineChart  implements Chart{
     @Override
     public byte[] convertImageToByteArray(Period period) {
         this.currentPeriod=period;
-        JFreeChart chart=chart();
+        JFreeChart chart= createChart();
         BufferedImage image = chart.createBufferedImage(width, height);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -71,7 +71,7 @@ public class EuroOnlineChart  implements Chart{
     }
 
     @Override
-    public TimeSeriesCollection dataset() {
+    public TimeSeriesCollection createDataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
@@ -114,8 +114,8 @@ public class EuroOnlineChart  implements Chart{
     }
 
     @Override
-    public JFreeChart chart() {
-        var dataset = dataset();
+    public JFreeChart createChart() {
+        var dataset = createDataset();
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "ОНЛАЙН ЄВРО ПриватБанк",
                 "Дата",
@@ -129,7 +129,7 @@ public class EuroOnlineChart  implements Chart{
         XYPlot plot = chart.getXYPlot();
         double minBound = getActualBound().get("min") - 1;
         double maxBound = getActualBound().get("max") + 1;
-        configurePlot(plot,minBound,maxBound);
+       // configurePlot(plot,minBound,maxBound);
 
         // Добавление отметок на кривую с числовыми значениями для первого графика
         TimeSeriesCollection datasetCollection1 = (TimeSeriesCollection) plot.getDataset();

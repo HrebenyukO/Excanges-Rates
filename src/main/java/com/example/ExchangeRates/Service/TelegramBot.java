@@ -60,7 +60,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-         //schedulService.saveActualExchangeRates();
+        //schedulService.saveActualExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);

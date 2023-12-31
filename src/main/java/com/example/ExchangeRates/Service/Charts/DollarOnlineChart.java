@@ -4,17 +4,13 @@ import com.example.ExchangeRates.Entity.Currency.NacBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
 import com.example.ExchangeRates.Repository.NacBankRepository;
 import com.example.ExchangeRates.Repository.OnlineDollarRepository;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,24 +43,42 @@ public class DollarOnlineChart implements Chart{
         this.nacBankList=nacBankRepository.findAll();
     }
 
-    private Map<String,Double> getActualBound(){
+    private Map<String, Double> getActualBound() {
         Map<String, Double> map = new HashMap<>();
+        int elementsToSkip;
+
+        switch (currentPeriod) {
+            case TEN_DAYS:
+                elementsToSkip = Math.max(0, onlineDollarList.size() - 10);
+                break;
+            case MONTH:
+                elementsToSkip = Math.max(0, onlineDollarList.size() - 30);
+                break;
+            case QUARTER:
+                elementsToSkip = Math.max(0, onlineDollarList.size() - 90);
+                break;
+            default:
+                elementsToSkip = 0;
+                break;
+        }
         // Получение минимального значения
-        double minPurchaseEuro = onlineDollarList.stream()
+        double minDollarBound = onlineDollarList.stream()
+                .skip(elementsToSkip)
                 .mapToDouble(OnlineDollar::getOnlinePurchaseDollar)
                 .min()
                 .orElse(Double.NaN);
 
         // Получение максимального значения
-        double maxSaleEuro = onlineDollarList.stream()
+        double maxDollarBound = onlineDollarList.stream()
                 .mapToDouble(OnlineDollar::getOnlineSaleDollar)
                 .max()
                 .orElse(Double.NaN);
-        map.put("min", minPurchaseEuro);
-        map.put("max", maxSaleEuro);
+
+        map.put("min", minDollarBound);
+        map.put("max", maxDollarBound);
         return map;
     }
-    public TimeSeriesCollection dataset() {
+    public TimeSeriesCollection createDataset() {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
@@ -91,31 +105,10 @@ public class DollarOnlineChart implements Chart{
         return dataset;
     }
 
-    // Метод для фильтрации данных по выбранному периоду времени
-  /*  private List<OnlineDollar> filterByPeriod(List<OnlineDollar> data, Period period) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate;
-
-        if (period.equals(Period.TEN_DAYS)) {
-            startDate = currentDate.minusDays(10);
-        } else if (period.equals(Period.MONTH)) {
-            startDate = currentDate.minusMonths(1);
-        } else if (period.equals(Period.QUARTER)) {
-            startDate = currentDate.minusMonths(3);
-        } else {
-            startDate = currentDate;
-        }
-
-        return data.stream()
-                .filter(entry -> convertToLocalDate(entry.getDate()).isAfter(startDate))
-                .collect(Collectors.toList());
-    }*/
-
     private <T> List<T> filterByPeriod(
-            List<T> data,
-            Function<T, LocalDate> getDateFunction,
-            Period period
-    ) {
+            List<T> data, Function<T,
+            LocalDate> getDateFunction,
+            Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
 
@@ -142,61 +135,36 @@ public class DollarOnlineChart implements Chart{
     }
 
     @Override
-    public JFreeChart chart() {
-        var dataset = dataset();
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "ОНЛАЙН ДОЛЛАР ПриватБанк",
-                "Дата",
-                "Курс",
-                dataset,
-                true,
-                true,
-                false
-        );
+    public JFreeChart createChart() {
+        var dataset = createDataset();
+        var min=getActualBound().get("min")-1;
+        var max=getActualBound().get("max")+1;
+        JFreeChart chart = new ChartBuilder().
+                buildTitle("Онлайн Доллар").
+                buildMinBound(min).
+                buildMaxBound(max).
+                buildDataset(dataset).
+                buildPeriod(currentPeriod).
+                build();
 
-        XYPlot plot = chart.getXYPlot();
-        double minBound = getActualBound().get("min") - 1;
-        double maxBound = getActualBound().get("max") + 1;
-        configurePlot(plot,minBound,maxBound);
+           /* DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
+            domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM"));
+            switch (currentPeriod) {
+                case TEN_DAYS:
+                    domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1)); // Устанавливаем интервал в один день
+                    break;
+                case MONTH:
+                    domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 2)); // Устанавливаем интервал в два дня
+                    break;
+            }
 
-        // Добавление отметок на кривую с числовыми значениями для первого графика
-        TimeSeriesCollection datasetCollection1 = (TimeSeriesCollection) plot.getDataset();
-        TimeSeries series1 = datasetCollection1.getSeries(0);
-
-        for (int i = 0; i < series1.getItemCount(); i += 1) {
-            double x = dataset.getXValue(0, i);
-            double y = series1.getValue(i).doubleValue();
-
-            // Форматирование числа с двумя знаками после запятой
-            String formattedY = String.format("%.2f", y);
-
-            XYTextAnnotation annotation = new XYTextAnnotation(formattedY, x, y + 0.2); // Смещение аннотации вверх
-            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
-            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
-            plot.addAnnotation(annotation);
-        }
-        // Добавление отметок на кривую с числовыми значениями для второго графика
-        TimeSeriesCollection datasetCollection2 = (TimeSeriesCollection) plot.getDataset();
-        TimeSeries series2 = datasetCollection2.getSeries(1);
-
-        for (int i = 0; i < series2.getItemCount(); i += 1) {
-            double x = dataset.getXValue(1, i); // Используем другой индекс для второго графика
-            double y = series2.getValue(i).doubleValue();
-
-            // Форматирование числа с двумя знаками после запятой
-            String formattedY = String.format("%.2f", y);
-
-            XYTextAnnotation annotation = new XYTextAnnotation(formattedY, x, y + 0.2); // Смещение аннотации вверх
-            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
-            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
-            plot.addAnnotation(annotation);
-        }
+        }*/
         return chart;
     }
     @Override
     public byte[] convertImageToByteArray(Period period) {
         this.currentPeriod=period;
-        JFreeChart chart=chart();
+        JFreeChart chart= createChart();
         BufferedImage image = chart.createBufferedImage(width, height);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
