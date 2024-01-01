@@ -5,6 +5,7 @@ import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
 import com.example.ExchangeRates.Repository.NacBankRepository;
 import com.example.ExchangeRates.Repository.OnlineDollarRepository;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -14,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,7 +38,9 @@ public class DollarOnlineChart implements Chart{
 
 
     @Autowired
-    public DollarOnlineChart(OnlineDollarRepository onlineDollarRepository,NacBankRepository nacBankRepository){
+    public DollarOnlineChart(
+            OnlineDollarRepository onlineDollarRepository,
+            NacBankRepository nacBankRepository){
         this.onlineDollarRepository=onlineDollarRepository;
         this.nacBankRepository=nacBankRepository;
         this.onlineDollarList=onlineDollarRepository.findAll();
@@ -121,7 +125,6 @@ public class DollarOnlineChart implements Chart{
         } else {
             startDate = currentDate;
         }
-
         return data.stream()
                 .filter(entry -> getDateFunction.apply(entry).isAfter(startDate))
                 .collect(Collectors.toList());
@@ -146,19 +149,6 @@ public class DollarOnlineChart implements Chart{
                 buildDataset(dataset).
                 buildPeriod(currentPeriod).
                 build();
-
-           /* DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
-            domainAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM"));
-            switch (currentPeriod) {
-                case TEN_DAYS:
-                    domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1)); // Устанавливаем интервал в один день
-                    break;
-                case MONTH:
-                    domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 2)); // Устанавливаем интервал в два дня
-                    break;
-            }
-
-        }*/
         return chart;
     }
     @Override

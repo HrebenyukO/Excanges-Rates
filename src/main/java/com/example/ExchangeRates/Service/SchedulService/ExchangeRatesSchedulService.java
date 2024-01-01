@@ -37,7 +37,7 @@ public class ExchangeRatesSchedulService {
     NacBankMapper nacBankMapper;
    private final String PRIVATBANK="PrivatBank";
 
-    @Scheduled(cron = "0 2 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void saveActualExchangeRates(){
         // много кода доработать
         log.info("GET && SAVE API");

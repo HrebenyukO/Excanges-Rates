@@ -1,7 +1,10 @@
 package com.example.ExchangeRates.Service.Charts;
 
 
+import com.example.ExchangeRates.Entity.Currency.NacBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
+import com.example.ExchangeRates.Repository.NacBankRepository;
 import com.example.ExchangeRates.Repository.OnlineEuroRepository;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -26,34 +29,59 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
 public class EuroOnlineChart  implements Chart{
     private OnlineEuroRepository onlineEuroRepository;
     private List<OnlineEuro> onlineEuroList;
-
+    private NacBankRepository nacBankRepository;
+    private List <NacBank> nacBankList;
     private Period currentPeriod;
 
     @Autowired
-    public EuroOnlineChart(OnlineEuroRepository onlineEuroRepository) {
+    public EuroOnlineChart(
+            OnlineEuroRepository onlineEuroRepository,
+            NacBankRepository nacBankRepository) {
         this.onlineEuroRepository = onlineEuroRepository;
+        this.nacBankRepository=nacBankRepository;
         this.onlineEuroList = onlineEuroRepository.findAll();
+        this.nacBankList=nacBankRepository.findAll();
     }
-    private Map<String,Double> getActualBound(){
+    private Map<String, Double> getActualBound() {
         Map<String, Double> map = new HashMap<>();
+        int elementsToSkip;
+
+        switch (currentPeriod) {
+            case TEN_DAYS:
+                elementsToSkip = Math.max(0, onlineEuroList.size() - 10);
+                break;
+            case MONTH:
+                elementsToSkip = Math.max(0, onlineEuroList.size() - 30);
+                break;
+            case QUARTER:
+                elementsToSkip = Math.max(0, onlineEuroList.size() - 90);
+                break;
+            default:
+                elementsToSkip = 0;
+                break;
+        }
         // Получение минимального значения
-        double minPurchaseEuro = onlineEuroList.stream()
+        double minEuroBound = onlineEuroList.stream()
+                .skip(elementsToSkip)
                 .mapToDouble(OnlineEuro::getOnlinePurchaseEuro)
                 .min()
                 .orElse(Double.NaN);
+
         // Получение максимального значения
-        double maxSaleEuro = onlineEuroList.stream()
+        double maxEuroBound = onlineEuroList.stream()
                 .mapToDouble(OnlineEuro::getOnlineSaleEuro)
                 .max()
                 .orElse(Double.NaN);
-        map.put("min", minPurchaseEuro);
-        map.put("max", maxSaleEuro);
+
+        map.put("min", minEuroBound);
+        map.put("max", maxEuroBound);
         return map;
     }
     @Override
@@ -75,19 +103,32 @@ public class EuroOnlineChart  implements Chart{
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries onlinePurchaseSeries = new TimeSeries("Купівля");
         TimeSeries onlineSaleSeries = new TimeSeries("Продаж");
+        TimeSeries nacBankEuro=new TimeSeries("НацБанк");
 
+        List<NacBank> filteredLists=filterByPeriod(
+                nacBankList,
+                nacBank -> convertToLocalDate(nacBank.getDate()),
+                currentPeriod);
+        List<OnlineEuro> filteredList = filterByPeriod(onlineEuroList,
+                onlineDollar -> convertToLocalDate(onlineDollar.getDate())  ,
+                currentPeriod);
 
-        List<OnlineEuro> filteredList = filterByPeriod(onlineEuroList,currentPeriod);
-        // Добавляем данные во временные ряды, используя addOrUpdate()
         for (OnlineEuro onlineEuro : filteredList) {
             onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
             onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleEuro());
         }
+        for(NacBank nacBank:filteredLists){
+            nacBankEuro.addOrUpdate(new Day(nacBank.getDate()),nacBank.getEuro());
+        }
         dataset.addSeries(onlinePurchaseSeries);
         dataset.addSeries(onlineSaleSeries);
+        dataset.addSeries(nacBankEuro);
         return dataset;
     }
-    private List<OnlineEuro> filterByPeriod(List<OnlineEuro> data, Period period) {
+    private <T> List<T> filterByPeriod(
+            List<T> data, Function<T,
+            LocalDate> getDateFunction,
+            Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
 
@@ -100,9 +141,8 @@ public class EuroOnlineChart  implements Chart{
         } else {
             startDate = currentDate;
         }
-
         return data.stream()
-                .filter(entry -> convertToLocalDate(entry.getDate()).isAfter(startDate))
+                .filter(entry -> getDateFunction.apply(entry).isAfter(startDate))
                 .collect(Collectors.toList());
     }
 
@@ -116,53 +156,15 @@ public class EuroOnlineChart  implements Chart{
     @Override
     public JFreeChart createChart() {
         var dataset = createDataset();
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "ОНЛАЙН ЄВРО ПриватБанк",
-                "Дата",
-                "Курс",
-                dataset,
-                true,
-                true,
-                false
-        );
-
-        XYPlot plot = chart.getXYPlot();
-        double minBound = getActualBound().get("min") - 1;
-        double maxBound = getActualBound().get("max") + 1;
-       // configurePlot(plot,minBound,maxBound);
-
-        // Добавление отметок на кривую с числовыми значениями для первого графика
-        TimeSeriesCollection datasetCollection1 = (TimeSeriesCollection) plot.getDataset();
-        TimeSeries series1 = datasetCollection1.getSeries(0);
-
-        for (int i = 0; i < series1.getItemCount(); i += 1) {
-            double x = dataset.getXValue(0, i);
-            double y = series1.getValue(i).doubleValue();
-
-            // Форматирование числа с двумя знаками после запятой
-            String formattedY = String.format("%.2f", y);
-
-            XYTextAnnotation annotation = new XYTextAnnotation(formattedY, x, y + 0.2); // Смещение аннотации вверх
-            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
-            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
-            plot.addAnnotation(annotation);
-        }
-        // Добавление отметок на кривую с числовыми значениями для второго графика
-        TimeSeriesCollection datasetCollection2 = (TimeSeriesCollection) plot.getDataset();
-        TimeSeries series2 = datasetCollection2.getSeries(1);
-
-        for (int i = 0; i < series2.getItemCount(); i += 1) {
-            double x = dataset.getXValue(1, i); // Используем другой индекс для второго графика
-            double y = series2.getValue(i).doubleValue();
-
-            // Форматирование числа с двумя знаками после запятой
-            String formattedY = String.format("%.2f", y);
-
-            XYTextAnnotation annotation = new XYTextAnnotation(formattedY, x, y + 0.2); // Смещение аннотации вверх
-            annotation.setPaint(Color.YELLOW); // Установка жёлтого цвета для текста
-            annotation.setFont(new Font("SansSerif", Font.PLAIN, annotationFontSize)); // Установка размера шрифта
-            plot.addAnnotation(annotation);
-        }
+        var min=getActualBound().get("min")-1;
+        var max=getActualBound().get("max")+1;
+        JFreeChart chart = new ChartBuilder().
+                buildTitle("Онлайн Євро").
+                buildMinBound(min).
+                buildMaxBound(max).
+                buildDataset(dataset).
+                buildPeriod(currentPeriod).
+                build();
         return chart;
     }
 }

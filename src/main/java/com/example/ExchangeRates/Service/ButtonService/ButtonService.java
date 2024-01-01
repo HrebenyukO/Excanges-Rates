@@ -38,11 +38,7 @@ public class ButtonService {
         var button = new InlineKeyboardButton();
         button.setText("ПриватБанк");
         button.setCallbackData("PrivatChart");
-        var button2=new InlineKeyboardButton();
-        button2.setText("НацБанк");
-        button2.setCallbackData("NacBankChart");
         rowInLine.add(button);
-        rowInLine.add(button2);
         rowsInLine.add(rowInLine);
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
