@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -19,7 +20,7 @@ public class NacBankDtoMapper {
     @Autowired
     private NacBankAPI nacBankAPI;
     public NacBankDTO mapToNacBankDTO() {
-        String jsonString=nacBankAPI.getApiNacBank();
+        String jsonString = nacBankAPI.getApiNacBank().block();
         ObjectMapper mapper = new ObjectMapper();
         double dollar = 0.0;
         double euro = 0.0;
