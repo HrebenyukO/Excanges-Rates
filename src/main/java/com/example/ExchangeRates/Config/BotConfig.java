@@ -1,11 +1,14 @@
 package com.example.ExchangeRates.Config;
 
+import com.example.ExchangeRates.Service.Currency.NacBankCurrencyBeanService;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Data
 @Configuration
@@ -17,6 +20,13 @@ public class BotConfig {
     @Value("${bot.token}")
     private String token;
 
+    @Autowired
+    private NacBankCurrencyBeanService nacBankCurrencyBeanService;
+
+    @Scheduled(cron = "0 * * * * *") // Расписание запуска метода
+    public void saveActualExchangeRates() {
+        nacBankCurrencyBeanService.create();
+    }
 
 
 }

@@ -6,6 +6,7 @@ import org.jfree.chart.axis.*;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
@@ -61,11 +62,9 @@ public class ChartBuilder {
                 tooltips,
                 urls
         );
-
         XYPlot plot = chart.getXYPlot();
-
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setLowerBound(minBound);
+        rangeAxis.setLowerBound(minBound);// Начальное значение оси Y
         rangeAxis.setUpperBound(maxBound);
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         rangeAxis.setTickUnit(new NumberTickUnit(0.5));
@@ -107,17 +106,15 @@ public class ChartBuilder {
                 break;
             case QUARTER:
                 domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 5)); // Устанавливаем интервал в 5 дней
-                addAnnotationsToSeries(plot, datasetCollection1, 0, 5); // Выводить через 3 точки
+                addAnnotationsToSeries(plot, datasetCollection1, 0, 5); // Выводить через 5 точек
                 addAnnotationsToSeries(plot, datasetCollection2, 1, 5);
                 break;
         }
         return chart;
     }
-
     //  Отображение отметок на кривой графика
     private void addAnnotationsToSeries(XYPlot plot, TimeSeriesCollection datasetCollection, int seriesIndex, int skip) {
         TimeSeries series = datasetCollection.getSeries(seriesIndex);
-
         for (int i = 0; i < series.getItemCount(); i += skip) {
             double x = dataset.getXValue(seriesIndex, i);
             double y = series.getValue(i).doubleValue();

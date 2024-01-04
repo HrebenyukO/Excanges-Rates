@@ -7,16 +7,14 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 import java.sql.Date;
-
-
 @Entity
 @Data
-public class OnlineDollar {
+public class OnlineEuroPrivatBank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String bank;
-    private double onlinePurchaseDollar;
-    private double onlineSaleDollar;
+    private double onlinePurchaseEuro;
+    private double onlineSaleEuro;
     private Date date;
 }

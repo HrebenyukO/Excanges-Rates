@@ -1,11 +1,10 @@
 package com.example.ExchangeRates.Service.Charts;
 
 import com.example.ExchangeRates.Entity.Currency.NacBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
 import com.example.ExchangeRates.Repository.NacBankRepository;
-import com.example.ExchangeRates.Repository.OnlineDollarRepository;
+import com.example.ExchangeRates.Repository.OnlineDollarRepositoryPB;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -15,7 +14,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -28,22 +26,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class DollarOnlineChart implements Chart{
-
-    private OnlineDollarRepository onlineDollarRepository;
-    private List<OnlineDollar> onlineDollarList;
-
+    private OnlineDollarRepositoryPB onlineDollarRepositoryPB;
+    private List<OnlineDollarPrivatBank> onlineDollarPrivatBankList;
     private NacBankRepository nacBankRepository;
     private List <NacBank> nacBankList;
     private Period currentPeriod;
-
-
     @Autowired
     public DollarOnlineChart(
-            OnlineDollarRepository onlineDollarRepository,
+            OnlineDollarRepositoryPB onlineDollarRepositoryPB,
             NacBankRepository nacBankRepository){
-        this.onlineDollarRepository=onlineDollarRepository;
+        this.onlineDollarRepositoryPB = onlineDollarRepositoryPB;
         this.nacBankRepository=nacBankRepository;
-        this.onlineDollarList=onlineDollarRepository.findAll();
+        this.onlineDollarPrivatBankList = onlineDollarRepositoryPB.findAll();
         this.nacBankList=nacBankRepository.findAll();
     }
 
@@ -53,28 +47,28 @@ public class DollarOnlineChart implements Chart{
 
         switch (currentPeriod) {
             case TEN_DAYS:
-                elementsToSkip = Math.max(0, onlineDollarList.size() - 10);
+                elementsToSkip = Math.max(0, onlineDollarPrivatBankList.size() - 10);
                 break;
             case MONTH:
-                elementsToSkip = Math.max(0, onlineDollarList.size() - 30);
+                elementsToSkip = Math.max(0, onlineDollarPrivatBankList.size() - 30);
                 break;
             case QUARTER:
-                elementsToSkip = Math.max(0, onlineDollarList.size() - 90);
+                elementsToSkip = Math.max(0, onlineDollarPrivatBankList.size() - 90);
                 break;
             default:
                 elementsToSkip = 0;
                 break;
         }
         // Получение минимального значения
-        double minDollarBound = onlineDollarList.stream()
+        double minDollarBound = onlineDollarPrivatBankList.stream()
                 .skip(elementsToSkip)
-                .mapToDouble(OnlineDollar::getOnlinePurchaseDollar)
+                .mapToDouble(OnlineDollarPrivatBank::getOnlinePurchaseDollar)
                 .min()
                 .orElse(Double.NaN);
 
         // Получение максимального значения
-        double maxDollarBound = onlineDollarList.stream()
-                .mapToDouble(OnlineDollar::getOnlineSaleDollar)
+        double maxDollarBound = onlineDollarPrivatBankList.stream()
+                .mapToDouble(OnlineDollarPrivatBank::getOnlineSaleDollar)
                 .max()
                 .orElse(Double.NaN);
 
@@ -91,14 +85,12 @@ public class DollarOnlineChart implements Chart{
                 nacBankList,
                 nacBank -> convertToLocalDate(nacBank.getDate()),
                 currentPeriod);
-        List<OnlineDollar> filteredList = filterByPeriod(onlineDollarList,
+        List<OnlineDollarPrivatBank> filteredList = filterByPeriod(onlineDollarPrivatBankList,
                 onlineDollar -> convertToLocalDate(onlineDollar.getDate())  ,
                 currentPeriod);
-
-
-        for (OnlineDollar onlineDollar : filteredList) {
-            onlinePurchaseSeries.addOrUpdate(new Day(onlineDollar.getDate()), onlineDollar.getOnlinePurchaseDollar());
-            onlineSaleSeries.addOrUpdate(new Day(onlineDollar.getDate()), onlineDollar.getOnlineSaleDollar());
+        for (OnlineDollarPrivatBank onlineDollarPrivatBank : filteredList) {
+            onlinePurchaseSeries.addOrUpdate(new Day(onlineDollarPrivatBank.getDate()), onlineDollarPrivatBank.getOnlinePurchaseDollar());
+            onlineSaleSeries.addOrUpdate(new Day(onlineDollarPrivatBank.getDate()), onlineDollarPrivatBank.getOnlineSaleDollar());
         }
         for(NacBank nacBank:filteredLists){
             nacBankDollar.addOrUpdate(new Day(nacBank.getDate()),nacBank.getDollar());
@@ -108,14 +100,12 @@ public class DollarOnlineChart implements Chart{
         dataset.addSeries(nacBankDollar);
         return dataset;
     }
-
     private <T> List<T> filterByPeriod(
             List<T> data, Function<T,
             LocalDate> getDateFunction,
             Period period) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate;
-
         if (period.equals(Period.TEN_DAYS)) {
             startDate = currentDate.minusDays(10);
         } else if (period.equals(Period.MONTH)) {

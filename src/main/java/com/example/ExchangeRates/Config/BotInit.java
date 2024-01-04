@@ -16,7 +16,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @RequiredArgsConstructor
 public class BotInit {
 
-
     private final TelegramBot telegramBot;
 
     @EventListener({ContextRefreshedEvent.class})

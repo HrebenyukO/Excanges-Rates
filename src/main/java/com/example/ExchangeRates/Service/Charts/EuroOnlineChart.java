@@ -2,14 +2,10 @@ package com.example.ExchangeRates.Service.Charts;
 
 
 import com.example.ExchangeRates.Entity.Currency.NacBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Repository.NacBankRepository;
-import com.example.ExchangeRates.Repository.OnlineEuroRepository;
-import org.jfree.chart.ChartFactory;
+import com.example.ExchangeRates.Repository.OnlineEuroRepositoryPB;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.plot.XYPlot;
 
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -17,7 +13,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,19 +29,19 @@ import java.util.stream.Collectors;
 
 @Component
 public class EuroOnlineChart  implements Chart{
-    private OnlineEuroRepository onlineEuroRepository;
-    private List<OnlineEuro> onlineEuroList;
+    private OnlineEuroRepositoryPB onlineEuroRepositoryPB;
+    private List<OnlineEuroPrivatBank> onlineEuroPrivatBankList;
     private NacBankRepository nacBankRepository;
     private List <NacBank> nacBankList;
     private Period currentPeriod;
 
     @Autowired
     public EuroOnlineChart(
-            OnlineEuroRepository onlineEuroRepository,
+            OnlineEuroRepositoryPB onlineEuroRepositoryPB,
             NacBankRepository nacBankRepository) {
-        this.onlineEuroRepository = onlineEuroRepository;
+        this.onlineEuroRepositoryPB = onlineEuroRepositoryPB;
         this.nacBankRepository=nacBankRepository;
-        this.onlineEuroList = onlineEuroRepository.findAll();
+        this.onlineEuroPrivatBankList = onlineEuroRepositoryPB.findAll();
         this.nacBankList=nacBankRepository.findAll();
     }
     private Map<String, Double> getActualBound() {
@@ -55,28 +50,28 @@ public class EuroOnlineChart  implements Chart{
 
         switch (currentPeriod) {
             case TEN_DAYS:
-                elementsToSkip = Math.max(0, onlineEuroList.size() - 10);
+                elementsToSkip = Math.max(0, onlineEuroPrivatBankList.size() - 10);
                 break;
             case MONTH:
-                elementsToSkip = Math.max(0, onlineEuroList.size() - 30);
+                elementsToSkip = Math.max(0, onlineEuroPrivatBankList.size() - 30);
                 break;
             case QUARTER:
-                elementsToSkip = Math.max(0, onlineEuroList.size() - 90);
+                elementsToSkip = Math.max(0, onlineEuroPrivatBankList.size() - 90);
                 break;
             default:
                 elementsToSkip = 0;
                 break;
         }
         // Получение минимального значения
-        double minEuroBound = onlineEuroList.stream()
+        double minEuroBound = onlineEuroPrivatBankList.stream()
                 .skip(elementsToSkip)
-                .mapToDouble(OnlineEuro::getOnlinePurchaseEuro)
+                .mapToDouble(OnlineEuroPrivatBank::getOnlinePurchaseEuro)
                 .min()
                 .orElse(Double.NaN);
 
         // Получение максимального значения
-        double maxEuroBound = onlineEuroList.stream()
-                .mapToDouble(OnlineEuro::getOnlineSaleEuro)
+        double maxEuroBound = onlineEuroPrivatBankList.stream()
+                .mapToDouble(OnlineEuroPrivatBank::getOnlineSaleEuro)
                 .max()
                 .orElse(Double.NaN);
 
@@ -109,13 +104,13 @@ public class EuroOnlineChart  implements Chart{
                 nacBankList,
                 nacBank -> convertToLocalDate(nacBank.getDate()),
                 currentPeriod);
-        List<OnlineEuro> filteredList = filterByPeriod(onlineEuroList,
+        List<OnlineEuroPrivatBank> filteredList = filterByPeriod(onlineEuroPrivatBankList,
                 onlineDollar -> convertToLocalDate(onlineDollar.getDate())  ,
                 currentPeriod);
 
-        for (OnlineEuro onlineEuro : filteredList) {
-            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlinePurchaseEuro());
-            onlineSaleSeries.addOrUpdate(new Day(onlineEuro.getDate()), onlineEuro.getOnlineSaleEuro());
+        for (OnlineEuroPrivatBank onlineEuroPrivatBank : filteredList) {
+            onlinePurchaseSeries.addOrUpdate(new Day(onlineEuroPrivatBank.getDate()), onlineEuroPrivatBank.getOnlinePurchaseEuro());
+            onlineSaleSeries.addOrUpdate(new Day(onlineEuroPrivatBank.getDate()), onlineEuroPrivatBank.getOnlineSaleEuro());
         }
         for(NacBank nacBank:filteredLists){
             nacBankEuro.addOrUpdate(new Day(nacBank.getDate()),nacBank.getEuro());

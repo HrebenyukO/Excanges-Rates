@@ -6,7 +6,7 @@ import com.example.ExchangeRates.Service.API.PrivatBankAPI;
 import com.example.ExchangeRates.Service.Charts.DollarOnlineChart;
 import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
 import com.example.ExchangeRates.Service.Charts.Period;
-import com.example.ExchangeRates.Service.Charts.PrivatBankAnalytics;
+
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
 import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
 import com.example.ExchangeRates.Service.UserService.UserService;
@@ -37,8 +37,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private PrivatBankAPI privatBankAPI;
    @Autowired
     ExchangeRatesSchedulService schedulService;
-   @Autowired
-    PrivatBankAnalytics privatBankAnalytics;
+
    @Autowired
    EuroOnlineChart euroAnalytics;
     @Autowired
@@ -60,7 +59,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        //schedulService.saveActualExchangeRates();
+        schedulService.saveActualExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);

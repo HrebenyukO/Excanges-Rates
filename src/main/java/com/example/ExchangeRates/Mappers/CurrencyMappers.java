@@ -54,16 +54,16 @@ public class CurrencyMappers {
         entity.setDate(new Date(System.currentTimeMillis()));
         return entity;
     }
-    public OnlineDollar dtoToOnlineDollar(CurrencyOnlineDTO dto, String bank ){
-        OnlineDollar entity=new OnlineDollar();
+    public OnlineDollarPrivatBank dtoToOnlineDollar(CurrencyOnlineDTO dto, String bank ){
+        OnlineDollarPrivatBank entity=new OnlineDollarPrivatBank();
         entity.setBank(bank);
         entity.setOnlineSaleDollar(dto.onlineDollarSales());
         entity.setOnlinePurchaseDollar(dto.onlineDollarPurchase());
         entity.setDate(new Date(System.currentTimeMillis()));
         return entity;
     }
-    public OnlineEuro dtoToOnlineEuro(CurrencyOnlineDTO dto, String bank ){
-        OnlineEuro entity=new OnlineEuro();
+    public OnlineEuroPrivatBank dtoToOnlineEuro(CurrencyOnlineDTO dto, String bank ){
+        OnlineEuroPrivatBank entity=new OnlineEuroPrivatBank();
         entity.setBank(bank);
         entity.setOnlineSaleEuro(dto.onlineEuroSales());
         entity.setOnlinePurchaseEuro(dto.onlineEuroPurchase());

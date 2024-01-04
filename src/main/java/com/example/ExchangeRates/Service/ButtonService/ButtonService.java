@@ -35,10 +35,14 @@ public class ButtonService {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
-        var button = new InlineKeyboardButton();
-        button.setText("ПриватБанк");
-        button.setCallbackData("PrivatChart");
-        rowInLine.add(button);
+        var buttonPB = new InlineKeyboardButton();
+        buttonPB.setText("ПриватБанк");
+        buttonPB.setCallbackData("PrivatChart");
+        var buttonMB=new InlineKeyboardButton();
+        buttonMB.setText("Mонобанк");
+        buttonMB.setCallbackData("MonobankChart");
+        rowInLine.add(buttonPB);
+        rowInLine.add(buttonMB);
         rowsInLine.add(rowInLine);
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
