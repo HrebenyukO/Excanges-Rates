@@ -21,4 +21,11 @@ public class OnlineEuroMonoBank {
     private double onlinePurchaseEuro;
     private double onlineSaleEuro;
     private Date date;
+
+    public OnlineEuroMonoBank(String bank, double onlinePurchaseEuro, double onlineSaleEuro, Date date) {
+        this.bank = bank;
+        this.onlinePurchaseEuro = onlinePurchaseEuro;
+        this.onlineSaleEuro = onlineSaleEuro;
+        this.date = date;
+    }
 }

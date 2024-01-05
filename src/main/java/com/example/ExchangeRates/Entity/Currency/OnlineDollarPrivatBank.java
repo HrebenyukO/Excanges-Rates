@@ -5,12 +5,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Date;
 
 
 @Entity
-@Data
+@NoArgsConstructor
+@Setter
+@Getter
 public class OnlineDollarPrivatBank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +24,11 @@ public class OnlineDollarPrivatBank {
     private double onlinePurchaseDollar;
     private double onlineSaleDollar;
     private Date date;
+
+    public OnlineDollarPrivatBank(String bank, double onlinePurchaseDollar, double onlineSaleDollar, Date date) {
+        this.bank = bank;
+        this.onlinePurchaseDollar = onlinePurchaseDollar;
+        this.onlineSaleDollar = onlineSaleDollar;
+        this.date = date;
+    }
 }

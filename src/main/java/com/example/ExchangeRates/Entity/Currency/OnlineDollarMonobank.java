@@ -22,4 +22,11 @@ public class OnlineDollarMonobank {
     private double onlinePurchaseDollar;
     private double onlineSaleDollar;
     private Date date;
+
+    public OnlineDollarMonobank(String bank, double onlinePurchaseDollar, double onlineSaleDollar, Date date) {
+        this.bank = bank;
+        this.onlinePurchaseDollar = onlinePurchaseDollar;
+        this.onlineSaleDollar = onlineSaleDollar;
+        this.date = date;
+    }
 }

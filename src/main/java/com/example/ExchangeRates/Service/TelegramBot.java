@@ -79,7 +79,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "💵 КУРСИ ВАЛЮТ":
                 InlineKeyboardMarkup keyboardMarkup= buttonService.menuExchangeRates();
-                sendMessage(chatID,privatBankAPI.getOnlineExchangeRates(),keyboardMarkup);
+               // sendMessage(chatID,privatBankAPI.getApiPrivatBankOnline(),keyboardMarkup);
                 break;
             case "📊 Аналітика курсів валют":
                 InlineKeyboardMarkup keyboardMarkupChart= buttonService.analyseExchangeRates();
