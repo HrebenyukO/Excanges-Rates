@@ -18,11 +18,11 @@ public class PrivatBankDtoMapper {
         try {
             JsonNode root = mapper.readTree(jsonString);
             // Предполагается, что структура JSON соответствует вашему ожиданию
-            double buyUSD = root.get(0).get("buy").asDouble();
-            double sellUSD = root.get(0).get("sale").asDouble();
-            double buyEUR = root.get(1).get("buy").asDouble();
-            double sellEUR = root.get(1).get("sale").asDouble();
 
+            double buyEUR = root.get(0).get("buy").asDouble();
+            double sellEUR = root.get(0).get("sale").asDouble();
+            double buyUSD = root.get(1).get("buy").asDouble();
+            double sellUSD = root.get(1).get("sale").asDouble();
             return new CurrencyOnlineDTO(buyUSD, sellUSD, buyEUR, sellEUR);
         } catch (Exception e) {
             throw new RuntimeException("Failed to map JSON to CurrencyOnlineDTO: " + e.getMessage());

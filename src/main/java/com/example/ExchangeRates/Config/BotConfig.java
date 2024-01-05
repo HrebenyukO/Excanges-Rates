@@ -1,5 +1,6 @@
 package com.example.ExchangeRates.Config;
 
+import com.example.ExchangeRates.Service.Currency.CurrencyFacade;
 import com.example.ExchangeRates.Service.Currency.NacBankCurrencyBeanService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,11 @@ public class BotConfig {
     private String token;
 
     @Autowired
-    private NacBankCurrencyBeanService nacBankCurrencyBeanService;
+    private CurrencyFacade currencyFacade;
 
     @Scheduled(cron = "0 * * * * *") // Расписание запуска метода
     public void saveActualExchangeRates() {
-        nacBankCurrencyBeanService.create();
+        currencyFacade.getActualCurrency();
     }
 
 

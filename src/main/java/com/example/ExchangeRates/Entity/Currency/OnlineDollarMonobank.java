@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Date;
 
@@ -14,6 +15,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @Entity
+@ToString
 public class OnlineDollarMonobank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
