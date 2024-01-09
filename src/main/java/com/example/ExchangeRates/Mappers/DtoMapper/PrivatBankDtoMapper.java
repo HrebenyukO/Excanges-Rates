@@ -17,8 +17,6 @@ public class PrivatBankDtoMapper {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode root = mapper.readTree(jsonString);
-            // Предполагается, что структура JSON соответствует вашему ожиданию
-
             double buyEUR = root.get(0).get("buy").asDouble();
             double sellEUR = root.get(0).get("sale").asDouble();
             double buyUSD = root.get(1).get("buy").asDouble();

@@ -1,15 +1,15 @@
 package com.example.ExchangeRates.Service.Currency;
 
 import com.example.ExchangeRates.Entity.Currency.OnlineDollarMonobank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
 import com.example.ExchangeRates.Repository.OnlineDollarRepositoryMB;
 import com.example.ExchangeRates.Repository.OnlineEuroRepositoryMB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -32,5 +32,13 @@ public class MonoBankCurrencyBeanService {
         onlineEuroRepositoryMB.save(entity);
         log.info("Save currency Online Euro Monobank");
         return entity;
+    }
+
+    public List<OnlineDollarMonobank> findAllOnlineDollarMonobank(){
+        return onlineDollarRepositoryMB.findAll();
+    }
+
+    public List<OnlineEuroMonoBank> findAllOnlineEuroMonobank(){
+        return onlineEuroRepositoryMB.findAll();
     }
 }

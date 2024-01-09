@@ -2,8 +2,8 @@ package com.example.ExchangeRates.Mappers.EntityMapper;
 
 import com.example.ExchangeRates.Entity.Currency.OnlineDollarMonobank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
 import com.example.ExchangeRates.Mappers.DtoMapper.MonoBankDtoMapper;
 import com.example.ExchangeRates.Mappers.DtoMapper.PrivatBankDtoMapper;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 @Component
 public class CurrencyOnlineMapper {
@@ -20,7 +19,6 @@ public class CurrencyOnlineMapper {
     PrivatBankDtoMapper privatBankDtoMapper;
     @Autowired
     MonoBankDtoMapper monoBankDtoMapper;
-
     private static final String PRIVATBANK = "PrivatBank";
     private static final String MONOBANK = "MonoBank";
 

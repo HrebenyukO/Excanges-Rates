@@ -1,4 +1,4 @@
-package com.example.ExchangeRates.Service.Charts;
+package com.example.ExchangeRates.Entity;
 
 public enum Period {
     DAY,

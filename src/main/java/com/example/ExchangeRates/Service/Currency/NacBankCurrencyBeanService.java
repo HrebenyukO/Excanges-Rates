@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class NacBankCurrencyBeanService {
@@ -19,5 +21,9 @@ public class NacBankCurrencyBeanService {
         nacBankRepository.save(entity);
         log.info("Save currency NacBank");
         return entity;
+    }
+
+    public List<NacBank> findAll(){
+        return nacBankRepository.findAll();
     }
 }

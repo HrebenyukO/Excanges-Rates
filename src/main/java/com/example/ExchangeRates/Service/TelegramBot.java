@@ -1,14 +1,14 @@
 package com.example.ExchangeRates.Service;
 
 import com.example.ExchangeRates.Config.BotConfig;
-import com.example.ExchangeRates.Service.API.NacBankAPI;
-import com.example.ExchangeRates.Service.API.PrivatBankAPI;
-import com.example.ExchangeRates.Service.Charts.DollarOnlineChart;
-import com.example.ExchangeRates.Service.Charts.EuroOnlineChart;
-import com.example.ExchangeRates.Service.Charts.Period;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollarMonobank;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
+import com.example.ExchangeRates.Service.Charts.ChartService;
+import com.example.ExchangeRates.Entity.Period;
 
 import com.example.ExchangeRates.Service.ButtonService.ButtonService;
-import com.example.ExchangeRates.Service.SchedulService.ExchangeRatesSchedulService;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
@@ -34,17 +34,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private ButtonService buttonService;
     @Autowired
-    private PrivatBankAPI privatBankAPI;
-   @Autowired
-    ExchangeRatesSchedulService schedulService;
-
-   @Autowired
-   EuroOnlineChart euroAnalytics;
-    @Autowired
-    DollarOnlineChart dollarOnlineChart;
-    @Autowired
-    NacBankAPI nacBankAPI;
-    @Override
+    ChartService chartService;
+       @Override
     public String getBotToken() {
         return botConfig.getToken();
     }
@@ -59,7 +50,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        schedulService.saveActualExchangeRates();
         if (update.hasMessage() && update.getMessage().hasText()) {
                 log.info("HAS MESSAGE START");
                 hasMessage(update);
@@ -79,7 +69,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "💵 КУРСИ ВАЛЮТ":
                 InlineKeyboardMarkup keyboardMarkup= buttonService.menuExchangeRates();
-               // sendMessage(chatID,privatBankAPI.getApiPrivatBankOnline(),keyboardMarkup);
+                //sendMessage(chatID,privatBankAPI.getApiPrivatBankOnline(),keyboardMarkup);
                 break;
             case "📊 Аналітика курсів валют":
                 InlineKeyboardMarkup keyboardMarkupChart= buttonService.analyseExchangeRates();
@@ -93,6 +83,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void hasQuery(Update update){
         String data=update.getCallbackQuery().getData();
         long chatID=update.getCallbackQuery().getMessage().getChatId();
+        byte [] euroOnline=null;
+        byte [] dollarOnline=null;
         switch (data){
             case "Оповіщення по курсу валют":
                 InlineKeyboardMarkup keyboardMarkup1= buttonService.notifiсation();
@@ -120,21 +112,50 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
             case "PrivatChart":
                 InlineKeyboardMarkup keyboardMarkup3=buttonService.privatbankAnalyse();
-                sendMessage(chatID,"Курс валют останні 10 днів ",keyboardMarkup3);
-                byte [] euroOnline=euroAnalytics.convertImageToByteArray(Period.TEN_DAYS);
-                byte [] dollarOnline=dollarOnlineChart.convertImageToByteArray(Period.TEN_DAYS);
+                sendMessage(chatID,"Курс валют у ПриватБанку ",keyboardMarkup3);
+                euroOnline=chartService.buildChart(
+                        Period.TEN_DAYS,
+                        OnlineEuroPrivatBank.class);
+               dollarOnline=chartService.buildChart(
+                        Period.TEN_DAYS,
+                        OnlineDollarPrivatBank.class);
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
-            case "Analyse_month":
+            case "Analyse_month_PB":
                 sendMessage(chatID,"Курс валют останній місяць ");
-                euroOnline=euroAnalytics.convertImageToByteArray(Period.MONTH);
-                dollarOnline=dollarOnlineChart.convertImageToByteArray(Period.MONTH);
+                euroOnline=chartService.buildChart(
+                        Period.MONTH,
+                        OnlineEuroPrivatBank.class);
+                dollarOnline=chartService.buildChart(
+                        Period.MONTH,
+                        OnlineDollarPrivatBank.class);
                 sendChartToTelegram(euroOnline,chatID);
                 sendChartToTelegram(dollarOnline,chatID);
                 break;
-
-
+            case "MonobankChart":
+                InlineKeyboardMarkup keyboardMarkup4=buttonService.monoBankAnalyse();
+                sendMessage(chatID,"Курс валют за 10 днів у МоноБанк",keyboardMarkup4);
+                euroOnline=chartService.buildChart(
+                        Period.TEN_DAYS,
+                        OnlineEuroMonoBank.class);
+                dollarOnline=chartService.buildChart(
+                        Period.TEN_DAYS,
+                        OnlineDollarMonobank.class);
+                sendChartToTelegram(euroOnline,chatID);
+                sendChartToTelegram(dollarOnline,chatID);
+                break;
+            case "Analyse_month_MB":
+                sendMessage(chatID,"Курс валют останній місяць у МоноБанк");
+                euroOnline=chartService.buildChart(
+                        Period.MONTH,
+                        OnlineEuroMonoBank.class);
+                dollarOnline=chartService.buildChart(
+                        Period.MONTH,
+                        OnlineDollarMonobank.class);
+                sendChartToTelegram(euroOnline,chatID);
+                sendChartToTelegram(dollarOnline,chatID);
+                break;
         }
 
     }

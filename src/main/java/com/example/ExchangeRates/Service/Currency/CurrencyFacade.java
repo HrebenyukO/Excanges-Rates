@@ -16,8 +16,8 @@ public class CurrencyFacade {
 
     public void getActualCurrency(){
         nacBankService.create();
-       // monoBankService.createOnlineDollar();
-        //monoBankService.createOnlineEuro();
+        monoBankService.createOnlineDollar();
+        monoBankService.createOnlineEuro();
         privatBankService.createOnlineDollar();
         privatBankService.createOnlineEuro();
     }

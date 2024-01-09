@@ -24,10 +24,8 @@ public class BotConfig {
     @Autowired
     private CurrencyFacade currencyFacade;
 
-    @Scheduled(cron = "0 * * * * *") // Расписание запуска метода
+    @Scheduled(cron = "0 0 * * * *") // Расписание запуска метода
     public void saveActualExchangeRates() {
         currencyFacade.getActualCurrency();
     }
-
-
 }

@@ -57,7 +57,27 @@ public class ButtonService {
         button.setCallbackData("Analyse_10_days");
         var button2=new InlineKeyboardButton();
         button2.setText("Місяць");
-        button2.setCallbackData("Analyse_month");
+        button2.setCallbackData("Analyse_month_PB");
+        var button3=new InlineKeyboardButton();
+        button3.setText("Квартал");
+        button3.setCallbackData("Analyse_kvartal");
+        rowInLine.add(button);
+        rowInLine.add(button2);
+        rowInLine.add(button3);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+    public InlineKeyboardMarkup monoBankAnalyse(){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var button = new InlineKeyboardButton();
+        button.setText("Останні 10 днів");
+        button.setCallbackData("Analyse_10_days_MB");
+        var button2=new InlineKeyboardButton();
+        button2.setText("Місяць");
+        button2.setCallbackData("Analyse_month_MB");
         var button3=new InlineKeyboardButton();
         button3.setText("Квартал");
         button3.setCallbackData("Analyse_kvartal");

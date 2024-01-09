@@ -21,7 +21,10 @@ public class OnlineEuroPrivatBank {
     private double onlineSaleEuro;
     private Date date;
 
-    public OnlineEuroPrivatBank(String bank, double onlinePurchaseEuro, double onlineSaleEuro, Date date) {
+    public OnlineEuroPrivatBank(String bank,
+                                double onlinePurchaseEuro,
+                                double onlineSaleEuro,
+                                Date date) {
         this.bank = bank;
         this.onlinePurchaseEuro = onlinePurchaseEuro;
         this.onlineSaleEuro = onlineSaleEuro;
