@@ -1,9 +1,7 @@
 package com.example.ExchangeRates.Mappers.EntityMapper;
 
-import com.example.ExchangeRates.Entity.Currency.OnlineDollarMonobank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
+import com.example.ExchangeRates.Entity.Currency.*;
+import com.example.ExchangeRates.Mappers.DtoMapper.AbankDtoMapper;
 import com.example.ExchangeRates.Mappers.DtoMapper.MonoBankDtoMapper;
 import com.example.ExchangeRates.Mappers.DtoMapper.PrivatBankDtoMapper;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
@@ -19,8 +17,12 @@ public class CurrencyOnlineMapper {
     PrivatBankDtoMapper privatBankDtoMapper;
     @Autowired
     MonoBankDtoMapper monoBankDtoMapper;
+    @Autowired
+    AbankDtoMapper abankDtoMapper;
     private static final String PRIVATBANK = "PrivatBank";
     private static final String MONOBANK = "MonoBank";
+
+    private static final String ABANK = "aBank";
 
     public <T> T mapToEntity(Class<T> entityClass) {
         String bankName = resolveBank(entityClass);
@@ -31,7 +33,10 @@ public class CurrencyOnlineMapper {
             return PRIVATBANK;
         } else if (entityClass == OnlineDollarMonobank.class || entityClass == OnlineEuroMonoBank.class) {
             return MONOBANK;
-        } else {
+        }  else if(entityClass== OnlineDollarAbank.class || entityClass==OnlineEuroAbank.class){
+            return ABANK;
+        }
+        else {
             throw new IllegalArgumentException("Unsupported entity type");
         }
     }
@@ -66,7 +71,22 @@ public class CurrencyOnlineMapper {
                     currencyOnlineDTO.onlineEuroPurchase(),
                     currencyOnlineDTO.onlineEuroSales(),
                     currentDate);
-        } else {
+        } else if(entityClass==OnlineDollarAbank.class){
+            CurrencyOnlineDTO currencyOnlineDTO=abankDtoMapper.parseCurrencyOnline();
+            return (T) new OnlineDollarAbank(
+                    bankName,
+                    currencyOnlineDTO.onlineDollarPurchase(),
+                    currencyOnlineDTO.onlineDollarSales(),
+                    currentDate);
+        } else if(entityClass==OnlineEuroAbank.class){
+            CurrencyOnlineDTO currencyOnlineDTO=abankDtoMapper.parseCurrencyOnline();
+            return (T) new OnlineEuroAbank(
+                    bankName,
+                    currencyOnlineDTO.onlineEuroPurchase(),
+                    currencyOnlineDTO.onlineEuroSales(),
+                    currentDate);
+        }
+        else {
             throw new IllegalArgumentException("Unsupported entity type");
         }
     }

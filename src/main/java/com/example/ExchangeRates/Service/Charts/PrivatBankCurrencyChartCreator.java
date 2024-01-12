@@ -87,16 +87,17 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
 
     @Override
     public JFreeChart createChart() {
-        String tittle=null;
-        if(currencyPrivatBankList.get(0).equals(OnlineDollarPrivatBank.class)){
-            tittle="Онлайн Доллар";}
-        else tittle="Євро Онлайн";
+        String title = null;
+        if (currencyPrivatBankList.get(0) instanceof OnlineDollarPrivatBank) {
+            title = "Онлайн Доллар";
+        }
+        else title="Євро Онлайн";
 
         var dataset = createDataset();
         var min=getActualBound().get("min")-1;
         var max=getActualBound().get("max")+1;
         JFreeChart chart = new ChartBuilder().
-                buildTitle(tittle).
+                buildTitle(title).
                 buildMinBound(min).
                 buildMaxBound(max).
                 buildDataset(dataset).

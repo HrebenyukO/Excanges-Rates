@@ -73,6 +73,8 @@ public class ChartBuilder {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesPaint(0, Color.RED);
         renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesPaint(2, Color.BLUE); // Устанавливаем синий цвет для третьего графика
+        renderer.setSeriesStroke(2, new BasicStroke(1.0f));
         renderer.setSeriesStroke(0, new BasicStroke(4.0f));
         renderer.setSeriesStroke(1, new BasicStroke(3.0f));
         plot.setRenderer(renderer);
