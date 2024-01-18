@@ -1,11 +1,10 @@
 package com.example.ExchangeRates.Service.Currency;
 
-import com.example.ExchangeRates.Entity.Currency.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroMonoBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuroPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
-import com.example.ExchangeRates.Repository.OnlineDollarRepositoryPB;
-import com.example.ExchangeRates.Repository.OnlineEuroRepositoryPB;
+import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositoryPB;
+import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositoryPB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

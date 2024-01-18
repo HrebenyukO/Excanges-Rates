@@ -1,6 +1,8 @@
 package com.example.ExchangeRates.Service.Charts;
 
 import com.example.ExchangeRates.Entity.Currency.*;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Entity.Period;
 import com.example.ExchangeRates.Service.Currency.NacBankCurrencyBeanService;
 import com.example.ExchangeRates.Service.Currency.PrivatBankCurrencyBeanService;
@@ -98,6 +100,7 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
         var max=getActualBound().get("max")+1;
         JFreeChart chart = new ChartBuilder().
                 buildTitle(title).
+                buildSubTitle("ПриватБанк").
                 buildMinBound(min).
                 buildMaxBound(max).
                 buildDataset(dataset).
@@ -105,7 +108,6 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
                 build();
         return chart;
     }
-
     @Override
     public byte[] convertImageToByteArray(Period period,Class<T> entityClass) {
         this.currentPeriod=period;

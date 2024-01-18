@@ -1,4 +1,4 @@
-package com.example.ExchangeRates.Entity.Currency;
+package com.example.ExchangeRates.Entity.Currency.OnlineEuro;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

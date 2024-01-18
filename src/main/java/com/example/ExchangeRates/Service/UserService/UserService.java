@@ -1,7 +1,7 @@
 package com.example.ExchangeRates.Service.UserService;
 
-import com.example.ExchangeRates.Entity.Notification;
-import com.example.ExchangeRates.Entity.User;
+import com.example.ExchangeRates.Entity.Currency.User.Notification;
+import com.example.ExchangeRates.Entity.Currency.User.User;
 import com.example.ExchangeRates.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

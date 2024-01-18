@@ -1,10 +1,10 @@
 package com.example.ExchangeRates.Service.Charts;
 
-import com.example.ExchangeRates.Entity.Currency.NacBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
+import com.example.ExchangeRates.Entity.Currency.*;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
 import com.example.ExchangeRates.Entity.Period;
-import com.example.ExchangeRates.Service.Currency.MonoBankCurrencyBeanService;
+import com.example.ExchangeRates.Service.Currency.AbankCurrencyBeanService;
 import com.example.ExchangeRates.Service.Currency.NacBankCurrencyBeanService;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Day;
@@ -28,11 +28,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 @Component
-public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
+public class AbankCurrencyChart<T> implements ChartCreator<T> {
     Period currentPeriod;
-    List<T> currencyMonobankList;
+    List<T> currencyAbankList;
     @Autowired
-    MonoBankCurrencyBeanService monoBankCurrencyBeanService;
+    AbankCurrencyBeanService abankCurrencyBeanService;
     @Autowired
     NacBankCurrencyBeanService nacBankCurrencyBeanService;
 
@@ -51,31 +51,31 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
 
 
 
-        if (!currencyMonobankList.isEmpty()) {
-            if (currencyMonobankList.get(0) instanceof OnlineDollarMonobank) {
-                List<OnlineDollarMonobank> filteredList = filterByPeriod(
-                        (List<OnlineDollarMonobank>) currencyMonobankList,
+        if (!currencyAbankList.isEmpty()) {
+            if (currencyAbankList.get(0) instanceof OnlineDollarAbank) {
+                List<OnlineDollarAbank> filteredList = filterByPeriod(
+                        (List<OnlineDollarAbank>) currencyAbankList,
                         onlineDollar -> convertToLocalDate(onlineDollar.getDate()),
                         currentPeriod);
-                for (OnlineDollarMonobank onlineDollarMonobank : filteredList) {
-                    onlinePurchaseSeries.addOrUpdate(new Day(onlineDollarMonobank.getDate()),
-                            onlineDollarMonobank.getOnlinePurchaseDollar());
-                    onlineSaleSeries.addOrUpdate(new Day(onlineDollarMonobank.getDate()),
-                            onlineDollarMonobank.getOnlineSaleDollar());
+                for (OnlineDollarAbank dollarAbank : filteredList) {
+                    onlinePurchaseSeries.addOrUpdate(new Day(dollarAbank.getDate()),
+                            dollarAbank.getOnlinePurchaseDollar());
+                    onlineSaleSeries.addOrUpdate(new Day(dollarAbank.getDate()),
+                            dollarAbank.getOnlineSaleDollar());
                 }
                 for (NacBank nacBank : filteredLists) {
                     nacBankDollar.addOrUpdate(new Day(nacBank.getDate()), nacBank.getDollar());
                 }
-            } else if (currencyMonobankList.get(0) instanceof OnlineEuroMonoBank) {
-                List<OnlineEuroMonoBank> filteredList = filterByPeriod(
-                        (List<OnlineEuroMonoBank>) currencyMonobankList,
+            } else if (currencyAbankList.get(0) instanceof OnlineEuroAbank) {
+                List<OnlineEuroAbank> filteredList = filterByPeriod(
+                        (List<OnlineEuroAbank>) currencyAbankList,
                         onlineEuro -> convertToLocalDate(onlineEuro.getDate()),
                         currentPeriod);
-                for (OnlineEuroMonoBank onlineEuroMonoBank : filteredList) {
-                    onlinePurchaseSeries.addOrUpdate(new Day(onlineEuroMonoBank.getDate()),
-                            onlineEuroMonoBank.getOnlinePurchaseEuro());
-                    onlineSaleSeries.addOrUpdate(new Day(onlineEuroMonoBank.getDate()),
-                            onlineEuroMonoBank.getOnlineSaleEuro());
+                for (OnlineEuroAbank euroAbank : filteredList) {
+                    onlinePurchaseSeries.addOrUpdate(new Day(euroAbank.getDate()),
+                            euroAbank.getOnlinePurchaseEuro());
+                    onlineSaleSeries.addOrUpdate(new Day(euroAbank.getDate()),
+                            euroAbank.getOnlineSaleEuro());
                 }
                 for (NacBank nacBank : filteredLists) {
                     nacBankDollar.addOrUpdate(new Day(nacBank.getDate()), nacBank.getEuro());
@@ -90,7 +90,7 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
     @Override
     public JFreeChart createChart() {
         String title = null;
-        if (currencyMonobankList.get(0) instanceof OnlineDollarMonobank) {
+        if (currencyAbankList.get(0) instanceof OnlineDollarAbank) {
             title = "Онлайн Доллар";
         }
         else title="Євро Онлайн";
@@ -99,7 +99,7 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
         var max=getActualBound().get("max")+1;
         JFreeChart chart = new ChartBuilder().
                 buildTitle(title).
-                buildSubTitle("MONOBANK").
+                buildSubTitle("АБАНК").
                 buildMinBound(min).
                 buildMaxBound(max).
                 buildDataset(dataset).
@@ -111,12 +111,12 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
     @Override
     public byte[] convertImageToByteArray(Period period,Class<T> entityClass) {
         this.currentPeriod=period;
-        if (entityClass.equals(OnlineDollarMonobank.class)) {
-            this.currencyMonobankList = (List<T>) monoBankCurrencyBeanService.
-                    findAllOnlineDollarMonobank();
-        } else if (entityClass.equals(OnlineEuroMonoBank.class)) {
-            this.currencyMonobankList = (List<T>) monoBankCurrencyBeanService.
-                    findAllOnlineEuroMonobank();
+        if (entityClass.equals(OnlineDollarAbank.class)) {
+            this.currencyAbankList = (List<T>) abankCurrencyBeanService.
+                    findAllOnlineDollarAbank();
+        } else if (entityClass.equals(OnlineEuroAbank.class)) {
+            this.currencyAbankList = (List<T>) abankCurrencyBeanService.
+                    findAllOnlineEuroAbank();
         }
         JFreeChart chart= createChart();
         BufferedImage image = chart.createBufferedImage(width, height);
@@ -135,13 +135,13 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
 
         switch (currentPeriod) {
             case TEN_DAYS:
-                elementsToSkip = Math.max(0, currencyMonobankList.size() - 10);
+                elementsToSkip = Math.max(0, currencyAbankList.size() - 10);
                 break;
             case MONTH:
-                elementsToSkip = Math.max(0, currencyMonobankList.size() - 30);
+                elementsToSkip = Math.max(0, currencyAbankList.size() - 30);
                 break;
             case QUARTER:
-                elementsToSkip = Math.max(0, currencyMonobankList.size() - 90);
+                elementsToSkip = Math.max(0, currencyAbankList.size() - 90);
                 break;
             default:
                 elementsToSkip = 0;
@@ -152,21 +152,21 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
         Stream<Double> purchaseStream;
         Stream<Double> saleStream;
 
-        if (!currencyMonobankList.isEmpty()) {
-            if (currencyMonobankList.get(0) instanceof OnlineDollarMonobank) {
-                purchaseStream = currencyMonobankList.stream()
-                        .map(OnlineDollarMonobank.class::cast)
-                        .map(OnlineDollarMonobank::getOnlinePurchaseDollar);
-                saleStream = currencyMonobankList.stream()
-                        .map(OnlineDollarMonobank.class::cast)
-                        .map(OnlineDollarMonobank::getOnlineSaleDollar);
-            } else if (currencyMonobankList.get(0) instanceof OnlineEuroMonoBank) {
-                purchaseStream = currencyMonobankList.stream()
-                        .map(OnlineEuroMonoBank.class::cast)
-                        .map(OnlineEuroMonoBank::getOnlinePurchaseEuro);
-                saleStream = currencyMonobankList.stream()
-                        .map(OnlineEuroMonoBank.class::cast)
-                        .map(OnlineEuroMonoBank::getOnlineSaleEuro);
+        if (!currencyAbankList.isEmpty()) {
+            if (currencyAbankList.get(0) instanceof OnlineDollarAbank) {
+                purchaseStream = currencyAbankList.stream()
+                        .map(OnlineDollarAbank.class::cast)
+                        .map(OnlineDollarAbank::getOnlinePurchaseDollar);
+                saleStream = currencyAbankList.stream()
+                        .map(OnlineDollarAbank.class::cast)
+                        .map(OnlineDollarAbank::getOnlineSaleDollar);
+            } else if (currencyAbankList.get(0) instanceof OnlineEuroAbank) {
+                purchaseStream = currencyAbankList.stream()
+                        .map(OnlineEuroAbank.class::cast)
+                        .map(OnlineEuroAbank::getOnlinePurchaseEuro);
+                saleStream = currencyAbankList.stream()
+                        .map(OnlineEuroAbank.class::cast)
+                        .map(OnlineEuroAbank::getOnlineSaleEuro);
             } else {
                 return map;
             }
@@ -211,5 +211,4 @@ public class MonoBankCurrencyChartCreator <T> implements ChartCreator<T>{
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
     }
-
 }

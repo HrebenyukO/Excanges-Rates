@@ -1,4 +1,4 @@
-package com.example.ExchangeRates.Entity;
+package com.example.ExchangeRates.Entity.Currency.User;
 
 import jakarta.persistence.*;
 import lombok.Data;

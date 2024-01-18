@@ -1,4 +1,4 @@
-package com.example.ExchangeRates.Entity.Currency;
+package com.example.ExchangeRates.Entity.Currency.CashCurrency;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,15 +7,14 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 import java.sql.Date;
-
 @Entity
 @Data
-public class CashDollar {
+public class CashEuro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String bank;
-    private double cashPurchaseDollar;
-    private double cashSaleDollar;
+    private double cashPurchaseEuro;
+    private double cashSaleEuro;
     private Date date;
 }

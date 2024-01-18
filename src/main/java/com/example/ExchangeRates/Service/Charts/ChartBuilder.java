@@ -7,6 +7,11 @@ import org.jfree.chart.axis.*;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.title.Title;
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
@@ -22,6 +27,8 @@ public class ChartBuilder {
     private boolean tooltips = true;
     private boolean urls = false;
     private String title;
+
+    private Title subTitle;
     private TimeSeriesCollection dataset;
     private Period period;
     private double minBound;
@@ -36,7 +43,14 @@ public class ChartBuilder {
         this.minBound = min;
         return this;
     }
-
+    public ChartBuilder buildSubTitle(String subtitle) {
+        this.subTitle = new TextTitle(
+                subtitle,
+                new Font("SansSerif", Font.BOLD + Font.ITALIC, 15));
+        this.subTitle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+        this.subTitle.setVerticalAlignment(VerticalAlignment.TOP);
+        return this;
+    }
     public ChartBuilder buildMaxBound(double max) {
         this.maxBound = max;
         return this;
@@ -68,6 +82,9 @@ public class ChartBuilder {
         rangeAxis.setUpperBound(maxBound);
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         rangeAxis.setTickUnit(new NumberTickUnit(0.5));
+
+        chart.addSubtitle(subTitle);
+
 
         // Настройка линий графика
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();

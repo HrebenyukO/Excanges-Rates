@@ -1,20 +1,22 @@
-package com.example.ExchangeRates.Entity.Currency;
+package com.example.ExchangeRates.Entity.Currency.OnlineDollar;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Date;
 
-
-@Entity
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
+@Entity
 @ToString
-public class OnlineDollarPrivatBank {
+public class OnlineDollarMonobank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -23,7 +25,7 @@ public class OnlineDollarPrivatBank {
     private double onlineSaleDollar;
     private Date date;
 
-    public OnlineDollarPrivatBank(String bank, double onlinePurchaseDollar, double onlineSaleDollar, Date date) {
+    public OnlineDollarMonobank(String bank, double onlinePurchaseDollar, double onlineSaleDollar, Date date) {
         this.bank = bank;
         this.onlinePurchaseDollar = onlinePurchaseDollar;
         this.onlineSaleDollar = onlineSaleDollar;
