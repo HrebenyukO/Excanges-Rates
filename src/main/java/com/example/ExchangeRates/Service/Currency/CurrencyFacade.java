@@ -1,13 +1,16 @@
 package com.example.ExchangeRates.Service.Currency;
 
+
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
 import com.example.ExchangeRates.Service.SendTable.CreateTable;
+import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 @Service
 public class CurrencyFacade {
@@ -23,13 +26,20 @@ public class CurrencyFacade {
     private SensBankCurrencyBeanService sensBankService;
     @Autowired
     CreateTable createTable;
+
+
+    private HashMap<String, CurrencyOnlineDTO> lastCurrencyHashMap;
+
+
+
+
     public void getAndSaveActualCurrency() {
-        nacBankService.create();
+       /*nacBankService.create();
         monoBankService.createAndSaveOnlineDollar();
         privatBankService.createOnlineDollar();
-        privatBankService.createOnlineEuro();
+        privatBankService.createOnlineEuro();*/
         aBankService.createOnlineDollar();
-        aBankService.createOnlineEuro();
+       // aBankService.createOnlineEuro();
         try {
             Thread.sleep(61000);
         } catch (InterruptedException e) {
@@ -44,7 +54,7 @@ public class CurrencyFacade {
     }
 
     public byte[] createTable(){
-        return createTable.sendLatestDataToTelegram();
+        return createTable.createCurrencyTableBytes();
     }
 
 }

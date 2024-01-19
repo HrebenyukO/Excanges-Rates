@@ -16,7 +16,7 @@ import java.sql.Date;
 @Setter
 @Entity
 @ToString
-public class OnlineDollarMonobank {
+public class OnlineDollarMonobank{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

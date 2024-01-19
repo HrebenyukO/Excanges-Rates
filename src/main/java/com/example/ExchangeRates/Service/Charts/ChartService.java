@@ -17,7 +17,7 @@ public class ChartService<T> {
     @Autowired
     PrivatBankCurrencyChartCreator<T> privatBankCurrencyChartCreator;
     @Autowired
-    AbankCurrencyChart abankCurrencyChartCreator;
+    AbankCurrencyChart<T> abankCurrencyChartCreator;
 
     public byte[] buildChart(Period period, Class<T> entityClass) {
         if (entityClass.equals(OnlineDollarMonobank.class) ||

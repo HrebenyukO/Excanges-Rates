@@ -82,6 +82,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             case "📊 Аналітика курсів валют":
                 InlineKeyboardMarkup keyboardMarkupChart= buttonService.analyseExchangeRates();
                 sendMessage(chatID,"Оберіть один з варіантів",keyboardMarkupChart);
+
                break;
             default:sendMessage(chatID,"Sorry,command was not recognized ");
 
@@ -208,6 +209,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void sendChartToTelegram(byte[] imageBytes, long chatId) {
         SendPhoto sendPhoto = new SendPhoto();
+
         sendPhoto.setChatId(chatId);
         sendPhoto.setPhoto(new InputFile(new ByteArrayInputStream(imageBytes), "chart.png"));
         try {
