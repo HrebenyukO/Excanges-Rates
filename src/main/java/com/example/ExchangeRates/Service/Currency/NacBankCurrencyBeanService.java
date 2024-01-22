@@ -9,18 +9,27 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.ExchangeRates.Util.LogColorConstants.ANSI_GREEN;
+import static com.example.ExchangeRates.Util.LogColorConstants.ANSI_RESET;
+
 @Service
 @Slf4j
-public class NacBankCurrencyBeanService {
+public class NacBankCurrencyBeanService implements CurrencyService{
     @Autowired
     NacBankEntityMapper entityMapper;
     @Autowired
     NacBankRepository nacBankRepository;
     public NacBank create(){
         NacBank entity=entityMapper.mapToNacBank();
+        NacBank existEntity=nacBankRepository.findFirstByOrderByIdDesc();
+
+        if(isSameDate(entity.getDate(),existEntity.getDate())){
+            return existEntity;
+        }else {
         nacBankRepository.save(entity);
-        log.info("Save currency NacBank");
+        log.info(ANSI_GREEN+" Save currency NacBank"+ANSI_RESET);
         return entity;
+        }
     }
 
     public List<NacBank> findAll(){

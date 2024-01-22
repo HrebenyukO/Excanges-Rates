@@ -4,10 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.Date;
 @NoArgsConstructor
@@ -15,6 +12,7 @@ import java.sql.Date;
 @Setter
 @Entity
 @ToString
+@EqualsAndHashCode
 public class OnlineEuroMonoBank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

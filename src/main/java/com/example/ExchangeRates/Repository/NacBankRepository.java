@@ -17,4 +17,5 @@ public interface NacBankRepository extends JpaRepository<NacBank,Long> {
     @Query(value = "SELECT * FROM nac_bank", nativeQuery = true)
     List<NacBank> findAll();
 
+    NacBank findFirstByOrderByIdDesc();
 }

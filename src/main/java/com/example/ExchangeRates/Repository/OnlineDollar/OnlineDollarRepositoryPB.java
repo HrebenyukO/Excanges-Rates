@@ -4,4 +4,5 @@ import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivat
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OnlineDollarRepositoryPB extends JpaRepository<OnlineDollarPrivatBank,Long> {
+    OnlineDollarPrivatBank findFirstByOrderByIdDesc();
 }
