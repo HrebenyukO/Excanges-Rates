@@ -1,6 +1,8 @@
 package com.example.ExchangeRates.Service.SendTable;
+import com.example.ExchangeRates.Service.Currency.AbankCurrencyBeanService;
 import com.example.ExchangeRates.Service.Currency.MonoBankCurrencyBeanService;
 
+import com.example.ExchangeRates.Service.Currency.PrivatBankCurrencyBeanService;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,15 +26,22 @@ import java.util.Map;
 public class CreateTable {
     @Autowired
     MonoBankCurrencyBeanService monoBankCurrencyBeanService;
+    @Autowired
+    AbankCurrencyBeanService abankCurrencyBeanService;
+    @Autowired
+    PrivatBankCurrencyBeanService privatBankCurrencyBeanService;
+
 
     private HashMap<String, CurrencyOnlineDTO> lastCurrencyHashMap;
 
     public HashMap<String,CurrencyOnlineDTO> getLastCurrencyHashMap(){
         HashMap<String,CurrencyOnlineDTO> hashMap=new HashMap<>();
-        var mono=monoBankCurrencyBeanService.createMonoDto();
+        var mono=monoBankCurrencyBeanService.createDto();
+        var aBank=abankCurrencyBeanService.createDto();
+        var privat=privatBankCurrencyBeanService.createDto();
         hashMap.put("МоноБанк",mono);
-
-
+        hashMap.put("Aбанк",aBank);
+        hashMap.put("ПриватБанк",privat);
         return hashMap;
     }
 

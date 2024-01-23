@@ -30,12 +30,15 @@ public class CurrencyFacade {
 
 
     public void getAndSaveActualCurrency() {
-        nacBankService.create();
+        sensBankService.createOrUpdateOnlineDollar();
+        sensBankService.createOrUpdateOnlineEuro();
+         nacBankService.create();
         monoBankService.createOrUpdateOnlineDollar();
         privatBankService.createOrUpdateOnlineDollar();
         privatBankService.createOrUpdateOnlineEuro();
         aBankService.createOrUpdateOnlineDollar();
         aBankService.createOrUpdateOnlineEuro();
+
         try {
             Thread.sleep(61000);
         } catch (InterruptedException e) {

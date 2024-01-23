@@ -99,7 +99,14 @@ public class CurrencyOnlineMapper {
                     currentDate);
         }else if(entityClass== OnlineDollarSensBank.class){
             CurrencyOnlineDTO currencyOnlineDTO=sensBankDtoMapper.parseCurrencyOnline();
-            return (T) new OnlineEuroAbank(
+            return (T) new OnlineDollarSensBank(
+                    bankName,
+                    currencyOnlineDTO.onlineDollarPurchase(),
+                    currencyOnlineDTO.onlineDollarSales(),
+                    currentDate);}
+        else if(entityClass== OnlineEuroSensBank.class){
+            CurrencyOnlineDTO currencyOnlineDTO=sensBankDtoMapper.parseCurrencyOnline();
+            return (T) new OnlineEuroSensBank(
                     bankName,
                     currencyOnlineDTO.onlineEuroPurchase(),
                     currencyOnlineDTO.onlineEuroSales(),

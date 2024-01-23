@@ -8,12 +8,13 @@ public class SensBankApi {
     private final WebClient webClient;
 
     public SensBankApi(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://sensbank.com").build();
+        this.webClient = webClientBuilder.baseUrl("https://sensebank.ua").build();
+
     }
 
     public String getCurrencyPage() {
         return webClient.get()
-                .uri("/currency-exchange")
+                .uri("/currency-exchange/")
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();

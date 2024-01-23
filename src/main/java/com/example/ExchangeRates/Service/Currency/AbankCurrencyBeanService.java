@@ -1,10 +1,14 @@
 package com.example.ExchangeRates.Service.Currency;
 
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
+import com.example.ExchangeRates.Mappers.DtoMapper.EntityToDtoMapper;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
 import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositoryAB;
 import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositoryAB;
+import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +29,8 @@ public class AbankCurrencyBeanService implements CurrencyService {
     private OnlineEuroRepositoryAB euroRepositoryAB;
     @Autowired
     private OnlineDollarRepositoryAB dollarRepositoryAB;
-
+    @Autowired
+    EntityToDtoMapper dtoMapper;
     @Transactional
     public OnlineDollarAbank createOrUpdateOnlineDollar() {
         OnlineDollarAbank entity = entityMapper.mapToEntity(OnlineDollarAbank.class);
@@ -107,4 +112,23 @@ public class AbankCurrencyBeanService implements CurrencyService {
         return euroRepositoryAB.findAll();
     }
 
+    public CurrencyOnlineDTO createDto() {
+        OnlineDollarAbank dollarAbank = getLastOnlineDollar();
+        OnlineEuroAbank euroABank = getLstOnlineEuro();
+
+        CurrencyOnlineDTO aBankDto = dtoMapper.entityAbankToDto(dollarAbank, euroABank);
+
+
+        return aBankDto;
+    }
+
+    public OnlineDollarAbank getLastOnlineDollar(){
+        OnlineDollarAbank entity=dollarRepositoryAB.findFirstByOrderByIdDesc();
+        return entity;
+    }
+
+    public OnlineEuroAbank getLstOnlineEuro(){
+        OnlineEuroAbank entity=euroRepositoryAB.findFirstByOrderByIdDesc();
+        return entity;
+    }
 }

@@ -1,11 +1,15 @@
 package com.example.ExchangeRates.Service.Currency;
 
 import ch.qos.logback.core.pattern.color.ANSIConstants;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
+import com.example.ExchangeRates.Mappers.DtoMapper.EntityToDtoMapper;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
 import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositoryPB;
 import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositoryPB;
+import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     OnlineDollarRepositoryPB onlineDollarRepositoryPB;
     @Autowired
     OnlineEuroRepositoryPB onlineEuroRepositoryPB;
+    @Autowired
+    EntityToDtoMapper dtoMapper;
     @Transactional
     public OnlineDollarPrivatBank createOrUpdateOnlineDollar() {
         OnlineDollarPrivatBank entity = entityMapper.mapToEntity(OnlineDollarPrivatBank.class);
@@ -101,5 +107,24 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     }
     public List<OnlineEuroPrivatBank> findAllOnlineEuroPB(){
         return onlineEuroRepositoryPB.findAll();
+    }
+
+    public CurrencyOnlineDTO createDto() {
+        OnlineDollarPrivatBank dollarPB = getLastOnlineDollar();
+        OnlineEuroPrivatBank euroPB = getLstOnlineEuro();
+
+        CurrencyOnlineDTO aBankDto = dtoMapper.entityPBToDto(dollarPB, euroPB);
+
+
+        return aBankDto;
+    }
+
+    public OnlineDollarPrivatBank getLastOnlineDollar(){
+        OnlineDollarPrivatBank entity=onlineDollarRepositoryPB.findFirstByOrderByIdDesc();
+        return entity;
+    }
+    public OnlineEuroPrivatBank getLstOnlineEuro(){
+        OnlineEuroPrivatBank entity=onlineEuroRepositoryPB.findFirstByOrderByIdDesc();
+        return entity;
     }
 }
