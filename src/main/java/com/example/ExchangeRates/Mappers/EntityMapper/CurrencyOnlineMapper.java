@@ -1,17 +1,8 @@
 package com.example.ExchangeRates.Mappers.EntityMapper;
 
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarSensBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroSensBank;
-import com.example.ExchangeRates.Mappers.DtoMapper.AbankDtoMapper;
-import com.example.ExchangeRates.Mappers.DtoMapper.MonoBankDtoMapper;
-import com.example.ExchangeRates.Mappers.DtoMapper.PrivatBankDtoMapper;
-import com.example.ExchangeRates.Mappers.DtoMapper.SensBankDtoMapper;
+import com.example.ExchangeRates.Entity.Currency.OnlineDollar.*;
+import com.example.ExchangeRates.Entity.Currency.OnlineEuro.*;
+import com.example.ExchangeRates.Mappers.DtoMapper.*;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,10 +20,14 @@ public class CurrencyOnlineMapper {
     AbankDtoMapper abankDtoMapper;
     @Autowired
     SensBankDtoMapper sensBankDtoMapper;
+    @Autowired
+    UkrGazBankDtoMapper ukrGazBankDtoMapper;
     private static final String PRIVATBANK = "PrivatBank";
     private static final String MONOBANK = "MonoBank";
     private static final String SENSBANK = "SensBank";
     private static final String ABANK = "aBank";
+
+    private static final String UKRGAZBANK="UkrGazBank";
 
     public <T> T mapToEntity(Class<T> entityClass) {
         String bankName = resolveBank(entityClass);
@@ -48,6 +43,9 @@ public class CurrencyOnlineMapper {
         }
         else if(entityClass== OnlineDollarSensBank.class || entityClass== OnlineEuroSensBank.class) {
             return SENSBANK;
+        }
+        else if(entityClass== OnlineDollarUkrGazBank.class || entityClass== OnlineEuroUkrGazBank.class) {
+            return UKRGAZBANK;
         }else {
             throw new IllegalArgumentException("Unsupported entity type");
         }
@@ -107,6 +105,20 @@ public class CurrencyOnlineMapper {
         else if(entityClass== OnlineEuroSensBank.class){
             CurrencyOnlineDTO currencyOnlineDTO=sensBankDtoMapper.parseCurrencyOnline();
             return (T) new OnlineEuroSensBank(
+                    bankName,
+                    currencyOnlineDTO.onlineEuroPurchase(),
+                    currencyOnlineDTO.onlineEuroSales(),
+                    currentDate);}
+        else if(entityClass== OnlineDollarUkrGazBank.class){
+            CurrencyOnlineDTO currencyOnlineDTO=ukrGazBankDtoMapper.parseCurrencyOnline();
+            return (T) new OnlineDollarUkrGazBank(
+                    bankName,
+                    currencyOnlineDTO.onlineDollarPurchase(),
+                    currencyOnlineDTO.onlineDollarSales(),
+                    currentDate);}
+        else if(entityClass== OnlineEuroUkrGazBank.class){
+            CurrencyOnlineDTO currencyOnlineDTO=ukrGazBankDtoMapper.parseCurrencyOnline();
+            return (T) new OnlineEuroUkrGazBank(
                     bankName,
                     currencyOnlineDTO.onlineEuroPurchase(),
                     currencyOnlineDTO.onlineEuroSales(),

@@ -4,9 +4,11 @@ import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonoba
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarSensBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroSensBank;
+import com.example.ExchangeRates.Mappers.DtoMapper.EntityToDtoMapper;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
 import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositorySB;
 import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositorySB;
+import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class SensBankCurrencyBeanService implements CurrencyService {
     OnlineDollarRepositorySB dollarRepositorySB;
     @Autowired
     OnlineEuroRepositorySB euroRepositorySB;
+    @Autowired
+    EntityToDtoMapper dtoMapper;
 
     @Transactional
     public OnlineDollarSensBank createOrUpdateOnlineDollar() {
@@ -98,5 +102,23 @@ public class SensBankCurrencyBeanService implements CurrencyService {
             existingEntity.setOnlineSaleEuro(newEntity.getOnlineSaleEuro());
         }
 
+    }
+
+    public CurrencyOnlineDTO createDto() {
+        OnlineDollarSensBank dollarSensBank= getLastOnlineDollar();
+        OnlineEuroSensBank euroSensBank = getLstOnlineEuro();
+        CurrencyOnlineDTO sbDTO = dtoMapper.entitySBToDto(dollarSensBank, euroSensBank);
+        return sbDTO;
+    }
+
+
+    public OnlineDollarSensBank getLastOnlineDollar(){
+        OnlineDollarSensBank entity=dollarRepositorySB.findFirstByOrderByIdDesc();
+        return entity;
+    }
+
+    public OnlineEuroSensBank getLstOnlineEuro(){
+        OnlineEuroSensBank entity=euroRepositorySB.findFirstByOrderByIdDesc();
+        return entity;
     }
 }

@@ -1,7 +1,6 @@
 package com.example.ExchangeRates.Mappers.DtoMapper;
 
-import com.example.ExchangeRates.Service.API.SensBankApi;
-import com.example.ExchangeRates.Service.API.aBankAPI;
+
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -27,12 +26,6 @@ import java.util.regex.Pattern;
 
 @Component
 public class SensBankDtoMapper {
-    private final SensBankApi sensBankApi;
-
-    @Autowired
-    public SensBankDtoMapper(SensBankApi sensBankApi) {
-        this.sensBankApi = sensBankApi;
-    }
 
     public CurrencyOnlineDTO parseCurrencyOnline() {
         double onlineDollarPurchase = 0.0;
@@ -45,7 +38,6 @@ public class SensBankDtoMapper {
 
             // Ищем блок с USD / UAH
             Element usdBlock = document.select(".exchange-rate-tabs__item:has(h2:contains(USD / UAH))").first();
-
             if (usdBlock != null) {
                 // Ищем элементы покупки и продажи для доллара
                 Element purchaseDollarElement = usdBlock.select(".exchange-rate-tabs__info-item:has(.exchange-rate-tabs__info-label.text--small:containsOwn(Купівля)) .exchange-rate-tabs__info-value.h4").first();

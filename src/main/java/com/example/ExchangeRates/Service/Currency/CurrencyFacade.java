@@ -22,7 +22,8 @@ public class CurrencyFacade {
     private SensBankCurrencyBeanService sensBankService;
     @Autowired
     CreateTable createTable;
-
+    @Autowired
+    UkrGazBankCurrencyBeanService ukrGazBankService;
 
     private HashMap<String, CurrencyOnlineDTO> lastCurrencyHashMap;
 
@@ -30,6 +31,7 @@ public class CurrencyFacade {
 
 
     public void getAndSaveActualCurrency() {
+
         sensBankService.createOrUpdateOnlineDollar();
         sensBankService.createOrUpdateOnlineEuro();
          nacBankService.create();
@@ -38,7 +40,8 @@ public class CurrencyFacade {
         privatBankService.createOrUpdateOnlineEuro();
         aBankService.createOrUpdateOnlineDollar();
         aBankService.createOrUpdateOnlineEuro();
-
+        ukrGazBankService.createOrUpdateOnlineDollar();
+        ukrGazBankService.createOrUpdateOnlineEuro();
         try {
             Thread.sleep(61000);
         } catch (InterruptedException e) {
