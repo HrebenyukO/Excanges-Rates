@@ -133,8 +133,8 @@ public class ButtonService {
         List<KeyboardRow> keyboardRows = new ArrayList<>();
         KeyboardRow firstRow = new KeyboardRow();
         firstRow.add("📊 Аналітика курсів валют");
-        firstRow.add("💱 Криптовалюти");
-        firstRow.add("📰 Новини МІНФІН");
+        firstRow.add("Повідомлення");
+        firstRow.add("Пропозиції до розробника");
         keyboardRows.add(firstRow);
         KeyboardRow secondRow = new KeyboardRow();
         secondRow.add("💵 КУРСИ ВАЛЮТ");
