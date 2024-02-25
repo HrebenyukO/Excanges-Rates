@@ -33,7 +33,7 @@ public class ActionMessageHandler implements ActionHandler<SendMessage>  {
             InlineKeyboardMarkup keyboardMarkup = buttonService.menuER();
             return telegramMessage.sendMessageWithKeyboard(
                     chatId,
-                    "Оповіщення про зміни курсу валют",
+                    "Банковський курс валют",
                     keyboardMarkup);
         });
         actions.put("📊 Аналітика курсів валют", chatId -> {
@@ -53,9 +53,6 @@ public class ActionMessageHandler implements ActionHandler<SendMessage>  {
                     keyBoardNotification);
 
         });
-
-
-
 
         actions.put("Оповіщення про зміни курсу", chatId -> {
             InlineKeyboardMarkup keyboardMarkup = buttonService.notifiсationChainER();
@@ -119,24 +116,33 @@ public class ActionMessageHandler implements ActionHandler<SendMessage>  {
             InlineKeyboardMarkup keyboardTimeER = buttonService.analyzeBanksDollar();
 
             return telegramMessage.sendMessageWithKeyboard(chatId,
-                    "Оберіть банк",keyboardTimeER
+                    "Оберіть один з варіантів",keyboardTimeER
+            );
+        });
+
+        actions.put("analyze_main_ER_NBU_€",chatId -> {
+            InlineKeyboardMarkup keyboardTimeER = buttonService.analyzeBanksEuro();
+
+            return telegramMessage.sendMessageWithKeyboard(chatId,
+                    "Оберіть один з варіантів",keyboardTimeER
             );
         });
 
         actions.put("analyze_main_dollar_menu",chatId -> {
-            InlineKeyboardMarkup keyboardDollarAnalyze = buttonService.mainAnalyze();
+            InlineKeyboardMarkup keyboardDollarAnalyze = buttonService.mainAnalyzeDollar();
 
             return telegramMessage.sendMessageWithKeyboard(chatId,
                     "Оберіть банк один з варіантів",keyboardDollarAnalyze
             );
         });
         actions.put("analyze_main_EURO_menu",chatId -> {
-            InlineKeyboardMarkup keyboardTimeER = buttonService.mainAnalyze();
+            InlineKeyboardMarkup keyboardTimeER = buttonService.mainAnalyzeEuro();
 
             return telegramMessage.sendMessageWithKeyboard(chatId,
                     "Оберіть банк",keyboardTimeER
             );
         });
+
         actions.put("PrivatChart_$",chatId -> {
             InlineKeyboardMarkup keyboardTimeER = buttonService.privatbankAnalyseDollar();
 
@@ -144,6 +150,14 @@ public class ActionMessageHandler implements ActionHandler<SendMessage>  {
                     "Оберіть період",keyboardTimeER
             );
         });
+        actions.put("PrivatChart_€",chatId -> {
+            InlineKeyboardMarkup keyboardTimeER = buttonService.privatbankAnalyseEuro();
+
+            return telegramMessage.sendMessageWithKeyboard(chatId,
+                    "Оберіть період",keyboardTimeER
+            );
+        });
+
         actions.put("MonobankChart_$",chatId -> {
             InlineKeyboardMarkup keyboardTimeER = buttonService.monoBankAnalyseDollar();
 
@@ -151,6 +165,13 @@ public class ActionMessageHandler implements ActionHandler<SendMessage>  {
                     "Оберіть період",keyboardTimeER
             );
         });
+        actions.put("MonobankChart_€",chatId -> {
+            InlineKeyboardMarkup keyboardTimeER = buttonService.monoBankAnalyseEuro();
+            return telegramMessage.sendMessageWithKeyboard(chatId,
+                    "Оберіть період",keyboardTimeER
+            );
+        });
+
         actions.put("AbankChart_$",chatId -> {
             InlineKeyboardMarkup keyboardTimeER = buttonService.aBankAnalyseDollar();
             return telegramMessage.sendMessageWithKeyboard(chatId,

@@ -2,12 +2,8 @@ package com.example.ExchangeRates.Service;
 
 
 import com.example.ExchangeRates.Actions.ActionHandler;
-import com.example.ExchangeRates.Actions.ActionMessageHandler;
 import com.example.ExchangeRates.Actions.ActionPictureHandler;
 import com.example.ExchangeRates.Config.BotConfig;
-import com.example.ExchangeRates.Mappers.EntityMapper.ArchiveCurrencyMapper;
-import com.example.ExchangeRates.Service.ButtonService.ButtonService;
-
 import com.example.ExchangeRates.Service.SendingService.TelegramMessage;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +13,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
@@ -33,8 +29,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private ActionHandler actionMessageHandler;
     @Autowired
-    ActionPictureHandler actionPictureHandler;
-
+    private ActionPictureHandler actionPictureHandler;
 
     @Override
     public String getBotToken() {
@@ -65,7 +60,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         long chatID = update.getMessage().getChatId();
         if(messageText.equals("/start")){
             userService.registredUser(update.getMessage());
-            SendMessage messageHello = telegramMessage.startCommandReceived(chatID, update.getMessage().getChat().getFirstName());
+            SendMessage messageHello = telegramMessage.startCommandReceived(
+                            chatID, update.getMessage().getChat().getFirstName());
             executeMessage(messageHello);
         }
         else {

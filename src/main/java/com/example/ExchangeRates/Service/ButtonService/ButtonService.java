@@ -51,6 +51,26 @@ public class ButtonService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup analyzeBanksEuro(){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var buttonPB = new InlineKeyboardButton();
+        buttonPB.setText("ПриватБанк");
+        buttonPB.setCallbackData("PrivatChart_€");
+        var buttonMB=new InlineKeyboardButton();
+        buttonMB.setText("Mонобанк");
+        buttonMB.setCallbackData("MonobankChart_€");
+        var  buttonAB=new InlineKeyboardButton("АБАНК");
+        buttonAB.setCallbackData("AbankChart_€");
+        rowInLine.add(buttonPB);
+        rowInLine.add(buttonMB);
+        rowInLine.add(buttonAB);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup privatbankAnalyseDollar(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -187,7 +207,6 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-
     public ReplyKeyboardMarkup mainMenu() {
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -202,7 +221,6 @@ public class ButtonService {
         keyboard.setKeyboard(keyboardRows);
         return keyboard;
     }
-
     public InlineKeyboardMarkup notifiсationChainER() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -257,7 +275,24 @@ public class ButtonService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup mainAnalyze() {
+    public InlineKeyboardMarkup mainAnalyzeEuro() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var buttonYES = new InlineKeyboardButton();
+        buttonYES.setText("\uD83D\uDCB9 до курсу НБУ");
+        buttonYES.setCallbackData("analyze_main_ER_NBU_€");
+        var buutonNo = new InlineKeyboardButton();
+        buutonNo.setText("⌛ По рокам ");
+        buutonNo.setCallbackData("analyze_main_ER_years_€");
+        rowInLine.add(buttonYES);
+        rowInLine.add(buutonNo);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup mainAnalyzeDollar() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
@@ -273,7 +308,6 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-
     public InlineKeyboardMarkup menuER() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -281,12 +315,12 @@ public class ButtonService {
 
         var online = new InlineKeyboardButton();
         online.setText("\uD83C\uDF10 Онлайн");
-        online.setCallbackData("menu_ER_online");
+        online.setCallbackData("chart_menu_ER_online");
         rowInLine.add(online);
 
         var gotivka = new InlineKeyboardButton();
         gotivka.setText("\uD83D\uDCB5 Наличные");
-        gotivka.setCallbackData("menu_ER_gotivka");
+        gotivka.setCallbackData("chart_menu_ER_gotivka");
         rowInLine.add(gotivka);
 
         rowsInLine.add(rowInLine);
