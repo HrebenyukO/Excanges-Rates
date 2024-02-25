@@ -1,27 +1,19 @@
 package com.example.ExchangeRates.Service;
 
-import com.example.ExchangeRates.Actions.ActionHandler;
-import com.example.ExchangeRates.Config.BotConfig;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroMonoBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
-import com.example.ExchangeRates.Service.Charts.ChartService;
-import com.example.ExchangeRates.Entity.Period;
-import com.example.ExchangeRates.Service.ButtonService.ButtonService;
-import com.example.ExchangeRates.Service.Currency.CurrencyFacade;
 
-import com.example.ExchangeRates.Service.SendingService.SendMessageService;
+import com.example.ExchangeRates.Actions.ActionHandler;
+import com.example.ExchangeRates.Actions.ActionMessageHandler;
+import com.example.ExchangeRates.Actions.ActionPictureHandler;
+import com.example.ExchangeRates.Config.BotConfig;
+import com.example.ExchangeRates.Mappers.EntityMapper.ArchiveCurrencyMapper;
+import com.example.ExchangeRates.Service.ButtonService.ButtonService;
+
 import com.example.ExchangeRates.Service.SendingService.TelegramMessage;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -32,22 +24,22 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Component
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
+
     private final BotConfig botConfig;
     @Autowired
     private UserService userService;
     @Autowired
-    private ButtonService buttonService;
-    @Autowired
     TelegramMessage telegramMessage;
     @Autowired
-    private ActionHandler actionHandler;
+    private ActionHandler actionMessageHandler;
+    @Autowired
+    ActionPictureHandler actionPictureHandler;
 
 
     @Override
     public String getBotToken() {
         return botConfig.getToken();
     }
-
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
@@ -57,74 +49,58 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.botConfig = botConfig;
     }
 
-
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             log.info("HAS MESSAGE START");
-            hasMessage(update);
+            hasMessage(update, actionMessageHandler);
         } else if (update.hasCallbackQuery()) {
             log.info("CALL BACK QUERY START");
-            hasQuery(update);
+            hasQuery(update, actionMessageHandler);
         }
     }
 
-    private void hasMessage(Update update) {
+    private void hasMessage(Update update, ActionHandler<?> actionHandler) {
         String messageText = update.getMessage().getText();
         long chatID = update.getMessage().getChatId();
-
-        switch (messageText) {
-            case "/start":
-                userService.registredUser(update.getMessage());
-                SendMessage messageHello=telegramMessage.
-                        startCommandReceived(chatID, update.getMessage().getChat().getFirstName());
-                executeMessage(messageHello);
-                break;
-            case "💵 КУРСИ ВАЛЮТ":
-                SendPhoto sendPhoto= telegramMessage.sendTableToTelegram(chatID);
-                executeMessage(sendPhoto);
-                break;
-            case "📊 Аналітика курсів валют":
-                InlineKeyboardMarkup keyboardMarkupChart = buttonService.analyseExchangeRates();
-                SendMessage messageAnalyze= telegramMessage.sendMessageWithKeyboard
-                        (chatID, "Оберіть один з варіантів", keyboardMarkupChart);
-                executeMessage(messageAnalyze);
-                break;
-            default:
-                telegramMessage.sendMessage(chatID, "Sorry,command was not recognized ");
-
+        if(messageText.equals("/start")){
+            userService.registredUser(update.getMessage());
+            SendMessage messageHello = telegramMessage.startCommandReceived(chatID, update.getMessage().getChat().getFirstName());
+            executeMessage(messageHello);
         }
+        else {
+        try {
+            Object botApiMethod = actionHandler.performAction(messageText, chatID);
+            executeMessage(botApiMethod);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }}
     }
-
-    private void hasQuery(Update update) {
+    private void hasQuery(Update update, ActionHandler<?> actionHandler) {
         String data = update.getCallbackQuery().getData();
         long chatID = update.getCallbackQuery().getMessage().getChatId();
+        Object botApiMethod=null;
         try {
-            BotApiMethod<?> botApiMethod = actionHandler.performAction(data, chatID);
-
-            if (botApiMethod != null) {
-                execute(botApiMethod);
+            if(data.startsWith("chart")){
+            botApiMethod=actionPictureHandler.performAction(data,chatID);
+            }
+            else {
+                botApiMethod = actionHandler.performAction(data, chatID);
+            }
+            executeMessage(botApiMethod);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+    void executeMessage(Object message) {
+        try {
+            if (message instanceof SendMessage) {
+                execute((SendMessage) message);
+            } else if (message instanceof SendPhoto) {
+                execute((SendPhoto) message);
             }
         } catch (TelegramApiException e) {
-            e.printStackTrace(); // Или обработайте исключение соответствующим образом
-        }
-    }
-
-    void executeMessage(SendPhoto sendPhoto) {
-        try {
-            execute(sendPhoto);
-        } catch (
-                TelegramApiException e) {
             e.printStackTrace();
-        }
-    }
-    void executeMessage(SendMessage sendMessage) {
-        try {
-            execute(sendMessage);
-        } catch (
-                TelegramApiException e) {
-            e.printStackTrace();
-
         }
     }
 }

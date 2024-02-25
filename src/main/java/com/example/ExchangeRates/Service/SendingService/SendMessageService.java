@@ -63,6 +63,9 @@ public class SendMessageService implements TelegramMessage {
     }
     @Override
    public SendPhoto sendChartToTelegram(byte [] array, long chatID){
-        return null;
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(chatID);
+        sendPhoto.setPhoto(new InputFile(new ByteArrayInputStream(array), "chart.png"));
+        return sendPhoto;
     }
 }

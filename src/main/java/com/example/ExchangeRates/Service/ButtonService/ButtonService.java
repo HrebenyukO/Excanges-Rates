@@ -31,18 +31,18 @@ public class ButtonService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup analyseExchangeRates(){
+    public InlineKeyboardMarkup analyzeBanksDollar(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         var buttonPB = new InlineKeyboardButton();
         buttonPB.setText("ПриватБанк");
-        buttonPB.setCallbackData("PrivatChart");
+        buttonPB.setCallbackData("PrivatChart_$");
         var buttonMB=new InlineKeyboardButton();
         buttonMB.setText("Mонобанк");
-        buttonMB.setCallbackData("MonobankChart");
+        buttonMB.setCallbackData("MonobankChart_$");
         var  buttonAB=new InlineKeyboardButton("АБАНК");
-        buttonAB.setCallbackData("AbankChart");
+        buttonAB.setCallbackData("AbankChart_$");
         rowInLine.add(buttonPB);
         rowInLine.add(buttonMB);
         rowInLine.add(buttonAB);
@@ -51,19 +51,19 @@ public class ButtonService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup privatbankAnalyse(){
+    public InlineKeyboardMarkup privatbankAnalyseDollar(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         var button = new InlineKeyboardButton();
         button.setText("Останні 10 днів");
-        button.setCallbackData("Analyse_10_days");
+        button.setCallbackData("chart_Analyse_10_days_PB");
         var button2=new InlineKeyboardButton();
         button2.setText("Місяць");
-        button2.setCallbackData("Analyse_month_PB");
+        button2.setCallbackData("chart_Analyse_month_PB");
         var button3=new InlineKeyboardButton();
         button3.setText("Квартал");
-        button3.setCallbackData("Analyse_kvartal");
+        button3.setCallbackData("chart_Analyse_kvartal");
         rowInLine.add(button);
         rowInLine.add(button2);
         rowInLine.add(button3);
@@ -71,19 +71,19 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-    public InlineKeyboardMarkup monoBankAnalyse(){
+    public InlineKeyboardMarkup privatbankAnalyseEuro() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         var button = new InlineKeyboardButton();
         button.setText("Останні 10 днів");
-        button.setCallbackData("Analyse_10_days_MB");
-        var button2=new InlineKeyboardButton();
+        button.setCallbackData("chart_Analyse_10_days_PB_€");
+        var button2 = new InlineKeyboardButton();
         button2.setText("Місяць");
-        button2.setCallbackData("Analyse_month_MB");
-        var button3=new InlineKeyboardButton();
+        button2.setCallbackData("chart_Analyse_month_PB_€");
+        var button3 = new InlineKeyboardButton();
         button3.setText("Квартал");
-        button3.setCallbackData("Analyse_kvartal");
+        button3.setCallbackData("chart_Analyse_kvartal_PB_€");
         rowInLine.add(button);
         rowInLine.add(button2);
         rowInLine.add(button3);
@@ -91,19 +91,79 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-    public InlineKeyboardMarkup aBankAnalyse(){
+    public InlineKeyboardMarkup monoBankAnalyseDollar(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         var button = new InlineKeyboardButton();
         button.setText("Останні 10 днів");
-        button.setCallbackData("Analyse_10_days_AB");
+        button.setCallbackData("chart_Analyse_10_days_MB");
         var button2=new InlineKeyboardButton();
         button2.setText("Місяць");
-        button2.setCallbackData("Analyse_month_AB");
+        button2.setCallbackData("chart_Analyse_month_MB");
         var button3=new InlineKeyboardButton();
         button3.setText("Квартал");
-        button3.setCallbackData("Analyse_kvartal");
+        button3.setCallbackData("chart_Analyse_kvartal_MB");
+        rowInLine.add(button);
+        rowInLine.add(button2);
+        rowInLine.add(button3);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+    public InlineKeyboardMarkup monoBankAnalyseEuro(){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var button = new InlineKeyboardButton();
+        button.setText("Останні 10 днів");
+        button.setCallbackData("chart_Analyse_10_days_MB_€");
+        var button2=new InlineKeyboardButton();
+        button2.setText("Місяць");
+        button2.setCallbackData("chart_Analyse_month_MB_€");
+        var button3=new InlineKeyboardButton();
+        button3.setText("Квартал");
+        button3.setCallbackData("chart_Analyse_kvartal_MB_€");
+        rowInLine.add(button);
+        rowInLine.add(button2);
+        rowInLine.add(button3);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+    public InlineKeyboardMarkup aBankAnalyseDollar(){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var button = new InlineKeyboardButton();
+        button.setText("Останні 10 днів");
+        button.setCallbackData("chart_Analyse_10_days_AB");
+        var button2=new InlineKeyboardButton();
+        button2.setText("Місяць");
+        button2.setCallbackData("chart_Analyse_month_AB");
+        var button3=new InlineKeyboardButton();
+        button3.setText("Квартал");
+        button3.setCallbackData("chart_Analyse_kvartal");
+        rowInLine.add(button);
+        rowInLine.add(button2);
+        rowInLine.add(button3);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+    public InlineKeyboardMarkup aBankAnalyseEuro(){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var button = new InlineKeyboardButton();
+        button.setText("Останні 10 днів");
+        button.setCallbackData("chart_Analyse_10_days_AB_€");
+        var button2=new InlineKeyboardButton();
+        button2.setText("Місяць");
+        button2.setCallbackData("chart_Analyse_month_AB_€");
+        var button3=new InlineKeyboardButton();
+        button3.setText("Квартал");
+        button3.setCallbackData("chart_Analyse_kvartal_AB_€");
         rowInLine.add(button);
         rowInLine.add(button2);
         rowInLine.add(button3);
@@ -133,7 +193,7 @@ public class ButtonService {
         List<KeyboardRow> keyboardRows = new ArrayList<>();
         KeyboardRow firstRow = new KeyboardRow();
         firstRow.add("📊 Аналітика курсів валют");
-        firstRow.add("Повідомлення");
+        firstRow.add("\uD83D\uDECE Повідомлення");
         firstRow.add("Пропозиції до розробника");
         keyboardRows.add(firstRow);
         KeyboardRow secondRow = new KeyboardRow();
@@ -143,7 +203,7 @@ public class ButtonService {
         return keyboard;
     }
 
-    public InlineKeyboardMarkup notifiсation2() {
+    public InlineKeyboardMarkup notifiсationChainER() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
@@ -159,4 +219,80 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
+    public InlineKeyboardMarkup mainNotification() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var buttonYES = new InlineKeyboardButton();
+        buttonYES.setText("\uD83D\uDCB9 Зміна курсу");
+        buttonYES.setCallbackData("notification_main_change_ER");
+        var buutonNo = new InlineKeyboardButton();
+        buutonNo.setText("⌛ Погодинне");
+        buutonNo.setCallbackData("notification_main_time_ER");
+        rowInLine.add(buttonYES);
+        rowInLine.add(buutonNo);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup menuAnalyze() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
+        var buttonYES = new InlineKeyboardButton();
+        buttonYES.setText("\uD83D\uDCB2");
+        buttonYES.setCallbackData("analyze_main_dollar_menu");
+        rowInLine.add(buttonYES);
+
+        var buutonNo = new InlineKeyboardButton();
+        buutonNo.setText(" € ");
+        buutonNo.setCallbackData("analyze_main_EURO_menu");
+        rowInLine.add(buutonNo);
+
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup mainAnalyze() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var buttonYES = new InlineKeyboardButton();
+        buttonYES.setText("\uD83D\uDCB9 до курсу НБУ");
+        buttonYES.setCallbackData("analyze_main_ER_NBU");
+        var buutonNo = new InlineKeyboardButton();
+        buutonNo.setText("⌛ По рокам ");
+        buutonNo.setCallbackData("analyze_main_ER_years");
+        rowInLine.add(buttonYES);
+        rowInLine.add(buutonNo);
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup menuER() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
+        var online = new InlineKeyboardButton();
+        online.setText("\uD83C\uDF10 Онлайн");
+        online.setCallbackData("menu_ER_online");
+        rowInLine.add(online);
+
+        var gotivka = new InlineKeyboardButton();
+        gotivka.setText("\uD83D\uDCB5 Наличные");
+        gotivka.setCallbackData("menu_ER_gotivka");
+        rowInLine.add(gotivka);
+
+        rowsInLine.add(rowInLine);
+        inlineKeyboardMarkup.setKeyboard(rowsInLine);
+
+        return inlineKeyboardMarkup;
+    }
+
 }

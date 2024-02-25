@@ -9,5 +9,5 @@ public interface TelegramMessage {
     SendMessage sendMessage(long chatID, String textToSend);
     SendMessage startCommandReceived(long chatID, String firstName);
     SendPhoto sendTableToTelegram(long chatId);
-    SendPhoto sendChartToTelegram(byte [] array, long chatID);
+    SendPhoto sendChartToTelegram(byte [] array,long chatID);
 }
