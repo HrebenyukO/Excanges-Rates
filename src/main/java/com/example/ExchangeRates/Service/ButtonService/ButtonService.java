@@ -50,7 +50,6 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-
     public InlineKeyboardMarkup analyzeBanksEuro(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -70,7 +69,6 @@ public class ButtonService {
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-
     public InlineKeyboardMarkup privatbankAnalyseDollar(){
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -274,7 +272,6 @@ public class ButtonService {
 
         return inlineKeyboardMarkup;
     }
-
     public InlineKeyboardMarkup mainAnalyzeEuro() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -284,14 +281,13 @@ public class ButtonService {
         buttonYES.setCallbackData("analyze_main_ER_NBU_€");
         var buutonNo = new InlineKeyboardButton();
         buutonNo.setText("⌛ По рокам ");
-        buutonNo.setCallbackData("analyze_main_ER_years_€");
+        buutonNo.setCallbackData("chart_analyze_main_ER_years_€");
         rowInLine.add(buttonYES);
         rowInLine.add(buutonNo);
         rowsInLine.add(rowInLine);
         inlineKeyboardMarkup.setKeyboard(rowsInLine);
         return inlineKeyboardMarkup;
     }
-
     public InlineKeyboardMarkup mainAnalyzeDollar() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -301,7 +297,7 @@ public class ButtonService {
         buttonYES.setCallbackData("analyze_main_ER_NBU");
         var buutonNo = new InlineKeyboardButton();
         buutonNo.setText("⌛ По рокам ");
-        buutonNo.setCallbackData("analyze_main_ER_years");
+        buutonNo.setCallbackData("chart_analyze_main_ER_years");
         rowInLine.add(buttonYES);
         rowInLine.add(buutonNo);
         rowsInLine.add(rowInLine);

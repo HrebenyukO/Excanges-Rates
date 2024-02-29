@@ -1,5 +1,6 @@
 package com.example.ExchangeRates.Actions;
 
+import com.example.ExchangeRates.Entity.Currency.ArсhiveCurrency.PrivatBankCurrencyArchive;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
@@ -33,39 +34,40 @@ public class ActionPictureHandler implements ActionHandler<SendPhoto> {
     public ActionPictureHandler()
     {
         actions.put("chart_menu_ER_online", chatId -> {
-            chart=createTable.createCurrencyTableBytes();
+            chart = createTable.createCurrencyTableBytes();
             return telegramMessage.sendChartToTelegram(chart,chatId);
         });
 
+        // АНАЛІТИКА У ПОРІВНЯННІ ДО НБУ
         //Аналітика $ ПриватБанка
         actions.put("chart_Analyse_10_days_PB", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineDollarPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineDollarPrivatBank.class);
             return telegramMessage.sendChartToTelegram( chart,chatId );
         });
 
         actions.put("chart_Analyse_month_PB", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineDollarPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineDollarPrivatBank.class);
             return telegramMessage.sendChartToTelegram( chart,chatId );
         });
 
         actions.put("chart_Analyse_kvartal", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineDollarPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineDollarPrivatBank.class);
             return telegramMessage.sendChartToTelegram( chart,chatId );
         });
 
         //Аналітика € ПриватБанка
         actions.put("chart_Analyse_10_days_PB_€", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineEuroPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineEuroPrivatBank.class);
             return  telegramMessage.sendChartToTelegram(chart, chatId);
         });
 
         actions.put("chart_Analyse_month_PB_€", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineEuroPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineEuroPrivatBank.class);
             return  telegramMessage.sendChartToTelegram(chart, chatId);
         });
 
         actions.put("chart_Analyse_kvartal_PB_€", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineEuroPrivatBank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineEuroPrivatBank.class);
             return  telegramMessage.sendChartToTelegram(chart, chatId);
         });
 
@@ -73,66 +75,79 @@ public class ActionPictureHandler implements ActionHandler<SendPhoto> {
           // Аналітика Монобанк Доллар
 
         actions.put("chart_Analyse_10_days_MB", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineDollarMonobank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineDollarMonobank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_month_MB", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineDollarMonobank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineDollarMonobank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_kvartal_MB", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineDollarMonobank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineDollarMonobank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         // Аналітика Монобанк Євро
 
         actions.put("chart_Analyse_10_days_MB_€", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineEuroMonoBank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineEuroMonoBank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_month_MB_€", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineEuroMonoBank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineEuroMonoBank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_kvartal_MB_€", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineEuroMonoBank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineEuroMonoBank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
-
 
         // Аналітика Абанк Доллар
 
         actions.put("chart_Analyse_10_days_AB", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineDollarAbank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineDollarAbank.class);
 
            return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_month_AB", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineDollarAbank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineDollarAbank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_kvartal", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineDollarAbank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineDollarAbank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
 
         });
         // Аналітика Абанк Євро
 
         actions.put("chart_Analyse_10_days_AB_€", chatId -> {
-            chart = chartService.buildChart(Period.TEN_DAYS, OnlineEuroAbank.class);
+            chart = chartService.buildChartWithNBU(Period.TEN_DAYS, OnlineEuroAbank.class);
 
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_month_AB_€", chatId -> {
-            chart = chartService.buildChart(Period.MONTH, OnlineEuroAbank.class);
+            chart = chartService.buildChartWithNBU(Period.MONTH, OnlineEuroAbank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
         });
         actions.put("chart_Analyse_kvartal_AB_€", chatId -> {
-            chart = chartService.buildChart(Period.QUARTER, OnlineEuroAbank.class);
+            chart = chartService.buildChartWithNBU(Period.QUARTER, OnlineEuroAbank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
 
         });
 
+        //Аналітика стосовно архівного курсу
+        actions.put("chart_analyze_main_ER_years", chatId -> {
+            System.out.println("ANALIZE ARCHIVE");
+            chart = chartService.buildChartWithArchive(Period.MONTH, PrivatBankCurrencyArchive.class);
+            return telegramMessage.sendChartToTelegram(chart, chatId);
+
+        });
+
+        actions.put("chart_analyze_main_ER_years_€", chatId -> {
+            System.out.println("ANALIZE ARCHIVE");
+            chart = chartService.buildChartWithArchive(Period.MONTH, PrivatBankCurrencyArchive.class);
+            return telegramMessage.sendChartToTelegram(chart, chatId);
+
+        });
     }
 
     @Override

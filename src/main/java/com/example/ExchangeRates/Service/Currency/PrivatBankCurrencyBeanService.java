@@ -1,12 +1,14 @@
 package com.example.ExchangeRates.Service.Currency;
 
 import ch.qos.logback.core.pattern.color.ANSIConstants;
+import com.example.ExchangeRates.Entity.Currency.ArсhiveCurrency.PrivatBankCurrencyArchive;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Mappers.DtoMapper.EntityToDtoMapper;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
+import com.example.ExchangeRates.Repository.ArchiveCurrency.ArchivePBRepository;
 import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositoryPB;
 import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositoryPB;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
@@ -28,6 +30,8 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     OnlineDollarRepositoryPB onlineDollarRepositoryPB;
     @Autowired
     OnlineEuroRepositoryPB onlineEuroRepositoryPB;
+    @Autowired
+    ArchivePBRepository archivePBRepository;
     @Autowired
     EntityToDtoMapper dtoMapper;
     @Transactional
@@ -126,5 +130,9 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     public OnlineEuroPrivatBank getLstOnlineEuro(){
         OnlineEuroPrivatBank entity=onlineEuroRepositoryPB.findFirstByOrderByIdDesc();
         return entity;
+    }
+
+    public List<PrivatBankCurrencyArchive> findAllArchivePB() {
+        return archivePBRepository.findAll();
     }
 }

@@ -126,8 +126,8 @@ public class ArchiveCurrencyMapper {
 
     public void saveEntitiesForDefaultPeriod() {
         System.out.println("WORK SAVE ENTITY 1");
-        LocalDate startDate = LocalDate.of(2023, 12, 30);
-        LocalDate endDate = LocalDate.of(2023, 12, 31);
+        LocalDate startDate = LocalDate.of(2024, 1, 18);
+        LocalDate endDate = LocalDate.of(2024, 1, 25);
         saveEntitiesForPeriod(startDate, endDate);
     }
 

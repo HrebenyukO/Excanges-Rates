@@ -1,5 +1,6 @@
 package com.example.ExchangeRates.Service.Charts;
 
+import com.example.ExchangeRates.Entity.Currency.ArсhiveCurrency.PrivatBankCurrencyArchive;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarMonobank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
@@ -19,7 +20,7 @@ public class ChartService<T> {
     @Autowired
     AbankCurrencyChart<T> abankCurrencyChartCreator;
 
-    public byte[] buildChart(Period period, Class<T> entityClass) {
+    public byte[] buildChartWithNBU(Period period, Class<T> entityClass) {
         if (entityClass.equals(OnlineDollarMonobank.class) ||
                 entityClass.equals(OnlineEuroMonoBank.class)) {
             return monoBankCurrencyChartCreator.convertImageToByteArray(period, entityClass);
@@ -31,4 +32,14 @@ public class ChartService<T> {
             return abankCurrencyChartCreator.convertImageToByteArray(period,entityClass);}
         else return null;
     }
+
+    public byte[] buildChartWithArchive(Period period, Class<T> entityClass) {
+        if (entityClass.equals(PrivatBankCurrencyArchive.class)||
+                entityClass.equals(OnlineEuroPrivatBank.class)){
+            return privatBankCurrencyChartCreator.convertImageToByteArrayWithArchive(period,entityClass);
+        }
+        else return null;
+    }
+
+
 }

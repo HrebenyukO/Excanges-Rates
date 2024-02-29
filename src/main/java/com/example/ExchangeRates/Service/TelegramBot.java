@@ -4,6 +4,7 @@ package com.example.ExchangeRates.Service;
 import com.example.ExchangeRates.Actions.ActionHandler;
 import com.example.ExchangeRates.Actions.ActionPictureHandler;
 import com.example.ExchangeRates.Config.BotConfig;
+import com.example.ExchangeRates.Mappers.EntityMapper.ArchiveCurrencyMapper;
 import com.example.ExchangeRates.Service.SendingService.TelegramMessage;
 import com.example.ExchangeRates.Service.UserService.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private ActionPictureHandler actionPictureHandler;
 
+    @Autowired
+    ArchiveCurrencyMapper archiveCurrencyMapper;
+
     @Override
     public String getBotToken() {
         return botConfig.getToken();
@@ -46,6 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+       // archiveCurrencyMapper.saveEntitiesForDefaultPeriod();
         if (update.hasMessage() && update.getMessage().hasText()) {
             log.info("HAS MESSAGE START");
             hasMessage(update, actionMessageHandler);
