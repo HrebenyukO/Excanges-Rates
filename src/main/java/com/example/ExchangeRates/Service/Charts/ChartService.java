@@ -34,10 +34,13 @@ public class ChartService<T> {
     }
 
     public byte[] buildChartWithArchive(Period period, Class<T> entityClass) {
-        if (entityClass.equals(PrivatBankCurrencyArchive.class)||
-                entityClass.equals(OnlineEuroPrivatBank.class)){
+        if (entityClass.equals(OnlineDollarPrivatBank.class)){
             return privatBankCurrencyChartCreator.convertImageToByteArrayWithArchive(period,entityClass);
         }
+         if (entityClass.equals(OnlineEuroPrivatBank.class)) {
+        return     privatBankCurrencyChartCreator.convertImageToByteArrayWithArchive(period,entityClass);
+        }
+
         else return null;
     }
 

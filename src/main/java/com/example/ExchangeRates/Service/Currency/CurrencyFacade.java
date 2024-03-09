@@ -32,13 +32,15 @@ public class CurrencyFacade {
 
     public void getAndSaveActualCurrency() {
 
-        sensBankService.createOrUpdateOnlineDollar();
+       /* sensBankService.createOrUpdateOnlineDollar();
         sensBankService.createOrUpdateOnlineEuro();
          nacBankService.create();
         monoBankService.createOrUpdateOnlineDollar();
         privatBankService.createOrUpdateOnlineDollar();
-        privatBankService.createOrUpdateOnlineEuro();
-        aBankService.createOrUpdateOnlineDollar();
+        privatBankService.createOrUpdateOnlineEuro();*/
+        privatBankService.createOrUpdateCashDollar();
+        privatBankService.createOrUpdateCashEuro();
+        /*aBankService.createOrUpdateOnlineDollar();
         aBankService.createOrUpdateOnlineEuro();
         ukrGazBankService.createOrUpdateOnlineDollar();
         ukrGazBankService.createOrUpdateOnlineEuro();
@@ -52,7 +54,7 @@ public class CurrencyFacade {
             Thread.sleep(361000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     public byte[] createTable(){

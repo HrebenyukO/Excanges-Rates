@@ -1,6 +1,7 @@
 package com.example.ExchangeRates.Mappers.DtoMapper;
 
 import com.example.ExchangeRates.Service.API.PrivatBankAPI;
+import com.example.ExchangeRates.dto.CurrencyCashDTO;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,21 @@ public class PrivatBankDtoMapper {
             double buyUSD = root.get(1).get("buy").asDouble();
             double sellUSD = root.get(1).get("sale").asDouble();
             return new CurrencyOnlineDTO(buyUSD, sellUSD, buyEUR, sellEUR);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to map JSON to CurrencyOnlineDTO: " + e.getMessage());
+        }
+    }
+
+    public CurrencyCashDTO mapToCurrencyCashDto() {
+        String jsonString = privatBankAPI.getApiPrivatBankGotivka().block();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(jsonString);
+            double buyEUR = root.get(0).get("buy").asDouble();
+            double sellEUR = root.get(0).get("sale").asDouble();
+            double buyUSD = root.get(1).get("buy").asDouble();
+            double sellUSD = root.get(1).get("sale").asDouble();
+            return new CurrencyCashDTO(buyUSD, sellUSD, buyEUR, sellEUR);
         } catch (Exception e) {
             throw new RuntimeException("Failed to map JSON to CurrencyOnlineDTO: " + e.getMessage());
         }

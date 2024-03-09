@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
@@ -86,12 +85,12 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
     }
 
 
-    public TimeSeriesCollection createDatasetWithArchive(Period currentPeriod) {
+    public TimeSeriesCollection createDatasetWithArchiveDollar(Period currentPeriod) {
         List<PrivatBankCurrencyArchive> archiveData = privatBankCurrencyBeanService.findAllArchivePB();
         TimeSeriesCollection dataset = new TimeSeriesCollection();
 
         // Создаем серии для 2023 и 2024 года
-        TimeSeries archiveSeries2023 = new TimeSeries("Архів ПриватБанка 2023");
+        TimeSeries archiveSeries2023 = new TimeSeries("Архів Доллар ПриватБанка 2023");
         TimeSeries onlineSaleSeries = new TimeSeries("Доллар онлайн 2024");
 
         // Фильтрация данных архива и добавление их в соответствующую серию
@@ -139,6 +138,56 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
         }
         return dataset;
     }
+    public TimeSeriesCollection createDatasetWithArchiveEuro(Period currentPeriod) {
+        List<PrivatBankCurrencyArchive> archiveData = privatBankCurrencyBeanService.findAllArchivePB();
+        TimeSeriesCollection dataset = new TimeSeriesCollection();
+
+        // Создаем серии для 2023 и 2024 года
+        TimeSeries archiveSeries2023 = new TimeSeries("Архів Євро ПриватБанка 2023");
+        TimeSeries onlineSaleSeries = new TimeSeries("Євро онлайн 2024");
+
+        // Фильтрация данных архива и добавление их в соответствующую серию
+        List<PrivatBankCurrencyArchive> filteredArchiveData2023 = filterByPeriod2023(
+                archiveData,
+                archive -> convertToLocalDate(archive.getDate()),
+                currentPeriod
+        );
+
+        // Добавляем серию 2023 года в dataset
+        dataset.addSeries(archiveSeries2023);
+        for (PrivatBankCurrencyArchive archiveEntry : filteredArchiveData2023) {
+            archiveSeries2023.addOrUpdate(new Day(archiveEntry.getDate()),
+                    archiveEntry.getOnlineEuro());
+        }
+        // Определение начальной даты для архива 2024 года
+        LocalDate archiveEndDate = filteredArchiveData2023.stream()
+                .map(archive -> convertToLocalDate(archive.getDate()))
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+
+        // Фильтрация данных архива и добавление их в соответствующую серию для 2024 года
+        List<OnlineEuroPrivatBank> euroPrivatBankList = privatBankCurrencyBeanService.findAllOnlineEuroPB();
+        List<OnlineEuroPrivatBank> filteredList = filterByPeriod2024(
+                euroPrivatBankList,
+                onlineDollar -> convertToLocalDate(onlineDollar.getDate()),
+                currentPeriod,
+                archiveEndDate
+        );
+        List<OnlineEuroPrivatBank> modifiedList = new ArrayList<>(filteredList);
+        // Добавляем серию 2024 года в dataset
+        dataset.addSeries(onlineSaleSeries);
+        for (OnlineEuroPrivatBank onlineEuroPrivatBank : modifiedList) {
+            LocalDate date2024 = convertToLocalDate(onlineEuroPrivatBank.getDate());
+
+            // Вычитаем один год из даты
+            LocalDate adjustedDate = date2024.minusYears(1);
+
+            // Создаем новую дату и добавляем точку в серию
+            onlineSaleSeries.addOrUpdate(new Day(Date.from(adjustedDate.atStartOfDay(ZoneId.systemDefault()).toInstant())),
+                    onlineEuroPrivatBank.getOnlineSaleEuro());
+        }
+        return dataset;
+    }
     @Override
     public JFreeChart createChart() {
         String title = null;
@@ -164,8 +213,8 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
     public JFreeChart createChartWithArchive(TimeSeriesCollection archiveDateSet) {
         String title = "Порівняння курсу з 2023 р";
         var dataset = archiveDateSet;
-        var min = getActualBoundForArchive().get("min") - 1;
-        var max = getActualBoundForArchive().get("max") + 1;
+        var min = 37;
+        var max = 44;
         JFreeChart chart = new ChartBuilder()
                 .buildTitle(title)
                 .buildSubTitle("ПриватБанк")
@@ -199,11 +248,16 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
 
     public byte[] convertImageToByteArrayWithArchive(Period period,Class<T> entityClass) {
         this.currentPeriod=period;
-        if (entityClass.equals(PrivatBankCurrencyArchive.class)) {
+        TimeSeriesCollection dataset= null;
+        if (entityClass.equals(OnlineDollarPrivatBank.class)) {
             this.currencyPrivatBankList = (List<T>) privatBankCurrencyBeanService.
-                    findAllArchivePB();
+                    findAllOnlineDollarPB();
+           dataset= createDatasetWithArchiveDollar(currentPeriod);
         }
-        var dataset=createDatasetWithArchive(currentPeriod);
+        else {
+            this.currencyPrivatBankList=(List<T>) privatBankCurrencyBeanService.findAllOnlineEuroPB();
+        dataset=createDatasetWithArchiveEuro(currentPeriod);}
+
         JFreeChart chart= createChartWithArchive(dataset);
 
         BufferedImage image = chart.createBufferedImage(width, height);
@@ -275,48 +329,6 @@ public class PrivatBankCurrencyChartCreator<T> implements ChartCreator<T> {
         return map;
     }
 
-    private Map<String, Double> getActualBoundForArchive() {
-        Map<String, Double> map = new HashMap<>();
-        int elementsToSkip;
-
-        switch (currentPeriod) {
-            case TEN_DAYS:
-                elementsToSkip = Math.max(0, currencyPrivatBankList.size() - 10);
-                break;
-            case MONTH:
-                elementsToSkip = Math.max(0, currencyPrivatBankList.size() - 30);
-                break;
-            case QUARTER:
-                elementsToSkip = Math.max(0, currencyPrivatBankList.size() - 90);
-                break;
-            case YEAR:
-                elementsToSkip = Math.max(0, currencyPrivatBankList.size() - 365); // Пример, можно адаптировать под фактическое количество дней в году
-                break;
-            default:
-                elementsToSkip = 0;
-                break;
-        }
-
-        double minBound = Double.NaN;
-        double maxBound = Double.NaN;
-
-        if (!currencyPrivatBankList.isEmpty()) {
-            // Определяем минимальное и максимальное значение для доллара и евро
-            minBound = currencyPrivatBankList.stream()
-                    .skip(elementsToSkip)
-                    .mapToDouble(archive -> Math.min(((PrivatBankCurrencyArchive) archive).getOnlineDollar(), ((PrivatBankCurrencyArchive) archive).getOnlineEuro()))
-                    .min()
-                    .orElse(Double.NaN);
-            maxBound = currencyPrivatBankList.stream()
-                    .mapToDouble(archive -> Math.max(((PrivatBankCurrencyArchive) archive).getOnlineDollar(), ((PrivatBankCurrencyArchive) archive).getOnlineEuro()))
-                    .max()
-                    .orElse(Double.NaN);
-        }
-
-        map.put("min", minBound);
-        map.put("max", maxBound);
-        return map;
-    }
     private <T> List<T> filterByPeriod(
             List<T> data, Function<T,
             LocalDate> getDateFunction,

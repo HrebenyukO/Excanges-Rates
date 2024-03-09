@@ -1,14 +1,16 @@
 package com.example.ExchangeRates.Service.Currency;
 
-import ch.qos.logback.core.pattern.color.ANSIConstants;
 import com.example.ExchangeRates.Entity.Currency.ArсhiveCurrency.PrivatBankCurrencyArchive;
-import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarAbank;
+import com.example.ExchangeRates.Entity.Currency.CashCurrency.CashDollarPrivatBank;
+import com.example.ExchangeRates.Entity.Currency.CashCurrency.CashEuroPrivatBank;
 import com.example.ExchangeRates.Entity.Currency.OnlineDollar.OnlineDollarPrivatBank;
-import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroAbank;
 import com.example.ExchangeRates.Entity.Currency.OnlineEuro.OnlineEuroPrivatBank;
 import com.example.ExchangeRates.Mappers.DtoMapper.EntityToDtoMapper;
+import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyCashMapper;
 import com.example.ExchangeRates.Mappers.EntityMapper.CurrencyOnlineMapper;
 import com.example.ExchangeRates.Repository.ArchiveCurrency.ArchivePBRepository;
+import com.example.ExchangeRates.Repository.CashDollar.CashDollarRepositoryPB;
+import com.example.ExchangeRates.Repository.CashEuro.CashEuroRepositoryPB;
 import com.example.ExchangeRates.Repository.OnlineDollar.OnlineDollarRepositoryPB;
 import com.example.ExchangeRates.Repository.OnlineEuro.OnlineEuroRepositoryPB;
 import com.example.ExchangeRates.dto.CurrencyOnlineDTO;
@@ -25,9 +27,15 @@ import static com.example.ExchangeRates.Util.LogColorConstants.*;
 @Slf4j
 public class PrivatBankCurrencyBeanService implements CurrencyService {
     @Autowired
-    CurrencyOnlineMapper entityMapper;
+    CurrencyOnlineMapper onlineMapper;
+    @Autowired
+    CurrencyCashMapper cashMapper;
     @Autowired
     OnlineDollarRepositoryPB onlineDollarRepositoryPB;
+    @Autowired
+    CashDollarRepositoryPB cashDollarRepository;
+    @Autowired
+    CashEuroRepositoryPB cashEuroRepositoryPB;
     @Autowired
     OnlineEuroRepositoryPB onlineEuroRepositoryPB;
     @Autowired
@@ -36,7 +44,7 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     EntityToDtoMapper dtoMapper;
     @Transactional
     public OnlineDollarPrivatBank createOrUpdateOnlineDollar() {
-        OnlineDollarPrivatBank entity = entityMapper.mapToEntity(OnlineDollarPrivatBank.class);
+        OnlineDollarPrivatBank entity = onlineMapper.mapToEntity(OnlineDollarPrivatBank.class);
         OnlineDollarPrivatBank existingEntity = onlineDollarRepositoryPB.findFirstByOrderByIdDesc();
         if (existingEntity != null && isSameDate(entity.getDate(), existingEntity.getDate())) {
             if (entity.getOnlinePurchaseDollar()==existingEntity.getOnlinePurchaseDollar()&&
@@ -71,7 +79,7 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     }
     @Transactional
     public OnlineEuroPrivatBank createOrUpdateOnlineEuro() {
-        OnlineEuroPrivatBank entity = entityMapper.mapToEntity(OnlineEuroPrivatBank.class);
+        OnlineEuroPrivatBank entity = onlineMapper.mapToEntity(OnlineEuroPrivatBank.class);
         OnlineEuroPrivatBank existingEntity = onlineEuroRepositoryPB.findFirstByOrderByIdDesc();
         if (existingEntity != null && isSameDate(entity.getDate(), existingEntity.getDate())) {
             if (entity.getOnlinePurchaseEuro()==existingEntity.getOnlinePurchaseEuro() &&
@@ -135,4 +143,79 @@ public class PrivatBankCurrencyBeanService implements CurrencyService {
     public List<PrivatBankCurrencyArchive> findAllArchivePB() {
         return archivePBRepository.findAll();
     }
+
+
+    @Transactional
+    public CashDollarPrivatBank createOrUpdateCashDollar() {
+        CashDollarPrivatBank entity = cashMapper.mapToEntity(CashDollarPrivatBank.class);
+        CashDollarPrivatBank existingEntity = cashDollarRepository.findFirstByOrderByIdDesc();
+        if (existingEntity != null && isSameDate(entity.getDate(), existingEntity.getDate())) {
+            if (entity.getCashPurchaseDollar()==existingEntity.getCashPurchaseDollar()&&
+                    entity.getCashSaleDollar()==existingEntity.getCashSaleDollar()) {
+                log.info(ANSI_BLUE+" No changes detected. Entity Dollar PrivatBank remains unchanged."+ANSI_RESET);
+                return existingEntity;
+            } else {
+                log.info(ANSI_YELLOW+"Update entity Dollar PrivatBank"+ANSI_RESET);
+                updateDollarEntity(existingEntity, entity);
+                return existingEntity;
+            }
+        } else {
+            log.info(ANSI_GREEN+"Save Dollar PrivatBank for date " + entity.getDate()+ANSI_RESET);
+            cashDollarRepository.save(entity);
+            return entity;
+        }
+    }
+
+    private void updateDollarEntity(CashDollarPrivatBank existingEntity, CashDollarPrivatBank newEntity) {
+        if (existingEntity.getCashPurchaseDollar() != newEntity.getCashPurchaseDollar()) {
+            log.info("Update Online Purchase Dollar from " +
+                    existingEntity.getCashPurchaseDollar() + " to " +
+                    newEntity.getCashPurchaseDollar());
+            existingEntity.setCashPurchaseDollar(newEntity.getCashPurchaseDollar());
+        }
+        if (existingEntity.getCashSaleDollar() != newEntity.getCashSaleDollar()) {
+            log.info("Update Online Sale Dollar from " +
+                    existingEntity.getCashSaleDollar() + " to " +
+                    newEntity.getCashSaleDollar());
+            existingEntity.setCashSaleDollar(newEntity.getCashSaleDollar());
+        }
+    }
+
+    @Transactional
+    public CashEuroPrivatBank createOrUpdateCashEuro() {
+        CashEuroPrivatBank entity = cashMapper.mapToEntity(CashEuroPrivatBank.class);
+        CashEuroPrivatBank existingEntity = cashEuroRepositoryPB.findFirstByOrderByIdDesc();
+        if (existingEntity != null && isSameDate(entity.getDate(), existingEntity.getDate())) {
+            if (entity.getCashPurchaseEuro()==existingEntity.getCashPurchaseEuro() &&
+                    entity.getCashSaleEuro()==existingEntity.getCashSaleEuro()) {
+                log.info(ANSI_BLUE+"No changes detected. Entity Euro PrivatBank remains unchanged."+ANSI_RESET);
+                return existingEntity;
+            } else {
+                log.info(ANSI_YELLOW+"Update entity Euro PrivatBank"+ANSI_RESET);
+                updateEuroEntity(existingEntity, entity);
+                return existingEntity;
+            }
+        } else {
+            log.info(ANSI_GREEN+"Save Euro PrivatBank for date " + entity.getDate()+ANSI_RESET);
+            cashEuroRepositoryPB.save(entity);
+            return entity;
+        }
+    }
+
+    private void updateEuroEntity(CashEuroPrivatBank existingEntity, CashEuroPrivatBank newEntity) {
+        if (existingEntity.getCashPurchaseEuro() != newEntity.getCashPurchaseEuro()) {
+            log.info("Update Online Purchase Euro from " +
+                    existingEntity.getCashPurchaseEuro() + " to " +
+                    newEntity.getCashPurchaseEuro());
+            existingEntity.setCashPurchaseEuro(newEntity.getCashPurchaseEuro());
+        }
+
+        if (existingEntity.getCashSaleEuro() != newEntity.getCashSaleEuro()) {
+            log.info("Update Online Sale Euro from " +
+                    existingEntity.getCashSaleEuro() + " to " +
+                    newEntity.getCashSaleEuro());
+            existingEntity.setCashSaleEuro(newEntity.getCashSaleEuro());
+        }
+    }
+
 }

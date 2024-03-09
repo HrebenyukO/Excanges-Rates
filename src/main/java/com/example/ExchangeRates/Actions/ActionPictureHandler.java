@@ -137,14 +137,14 @@ public class ActionPictureHandler implements ActionHandler<SendPhoto> {
         //Аналітика стосовно архівного курсу
         actions.put("chart_analyze_main_ER_years", chatId -> {
             System.out.println("ANALIZE ARCHIVE");
-            chart = chartService.buildChartWithArchive(Period.MONTH, PrivatBankCurrencyArchive.class);
+            chart = chartService.buildChartWithArchive(Period.MONTH, OnlineDollarPrivatBank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
 
         });
 
         actions.put("chart_analyze_main_ER_years_€", chatId -> {
             System.out.println("ANALIZE ARCHIVE");
-            chart = chartService.buildChartWithArchive(Period.MONTH, PrivatBankCurrencyArchive.class);
+            chart = chartService.buildChartWithArchive(Period.MONTH, OnlineEuroPrivatBank.class);
             return telegramMessage.sendChartToTelegram(chart, chatId);
 
         });
